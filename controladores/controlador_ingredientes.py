@@ -10,13 +10,13 @@ class ControladorIngredientes(Controlador):
         self.__ingredientes = {}
 
     def abre_tela_inicial(self):
-        switcher = {0: "Give TypeError", 1: self.registra_ingrediente, 2: self.altera_ingrediente, 3: self.remove_ingrediente, 4: self.lista_ingredientes, 5: self.pesquisa_ingrediente_por_nome}
+        switcher = {0: False, 1: self.registra_ingrediente, 2: self.altera_ingrediente, 3: self.remove_ingrediente, 4: self.lista_ingredientes, 5: self.pesquisa_ingrediente_por_nome}
         while True:
             opcao = self.tela.mostra_opcoes()
             funcao_escolhida = switcher[opcao]
-            try:
+            if funcao_escolhida:
                 funcao_escolhida()
-            except TypeError:
+            else:
                 break
 
     def registra_ingrediente(self):
@@ -89,8 +89,8 @@ class ControladorIngredientes(Controlador):
     def dados_ingrediente(self, codigo: int):
         try:
             ingrediente = self.__ingredientes[codigo]
-        except IndexError:
-            return None
+        except KeyError:
+            return False
         dados = {"codigo": codigo, "nome": ingrediente.nome, "unidade_medida": ingrediente.unidade_medida, "preco_unitario": ingrediente.preco_unitario, "quantidade_estoque": ingrediente.quantidade_estoque}
         return dados
 

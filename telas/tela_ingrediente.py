@@ -62,6 +62,7 @@ class TelaIngrediente(Tela):
                 print()
                 print("Preço de compra anterior: {:.2f}".format(dados_antigos["preco_unitario"]))
                 novos_dados["preco_unitario"] = self.le_num_fracionario("Digite o novo preço de compra: ")
+                print()
                 return codigo, novos_dados
             else:
                 self.mensagem_erro("Nenhum ingrediente com este código existe")
@@ -89,6 +90,7 @@ class TelaIngrediente(Tela):
             ingrediente = self.controlador.dados_ingrediente(codigo)
             if ingrediente:
                 print("Remover este ingrediente?")
+                print()
                 self.mostra_ingrediente(ingrediente)
                 print("0: Sim")
                 print("1: Não")
@@ -96,11 +98,11 @@ class TelaIngrediente(Tela):
                 opcao = self.le_num_inteiro("Opção: ", range(2))
                 print()
                 if opcao == 0:
-                    print("Ingrediente Removido")
+                    self.mensagem("Ingrediente Removido")
                     print()
                     return codigo
                 else:
-                    print("Remoção Cancelada")
+                    self.mensagem("Remoção Cancelada")
                     print()
             else:
                 self.mensagem_erro("Nenhum ingrediente com este código existe")
