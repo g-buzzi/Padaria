@@ -9,14 +9,20 @@ class Tela(ABC):
     def controlador(self):
         return self.__controlador
 
-    @abstractmethod
-    def mostra_opcoes(self) -> int:
-        pass
+    def mostra_opcoes(self, opcoes: dict, titulo = "--------- Opções ---------") -> int:
+        print(titulo)
+        for numero, opcao in opcoes.items():
+            print("{}: {}".format(numero, opcao))
+        print()
+        opcao = self.le_num_inteiro("Opção: ", opcoes.keys())
+        print()
+        return opcao
 
     def le_num_inteiro(self, mensagem: str = "Escolha uma opção: ", valores_validos: list = None) -> int:
         while True:
             try:
-                inteiro = int(input(mensagem))
+                inteiro = input(mensagem)
+                inteiro = int(inteiro)
                 if valores_validos and inteiro not in valores_validos:
                     raise ValueError
                 return inteiro
@@ -32,8 +38,8 @@ class Tela(ABC):
     def le_num_fracionario(self, mensagem: str = "Digite um valor"):
         while True:
             try:
-                fracionario = float(input(mensagem))
-                return fracionario
+                fracionario = input(mensagem)
+                return float(fracionario)
             except ValueError:
                 self.mensagem_erro("Valor incorreto. Digite um número fracionário.")
     
