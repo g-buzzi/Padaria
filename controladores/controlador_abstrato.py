@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from telas.tela_abstrata import Tela
 
+
 class Controlador(ABC):
     @abstractmethod
     def __init__(self, tela):
