@@ -1,3 +1,4 @@
-from controladores.controlador_ingredientes import ControladorIngredientes
+from controladores.controlador_central import ControladorCentral
 
-ControladorIngredientes().inicia()
+
+ControladorCentral().inicia()

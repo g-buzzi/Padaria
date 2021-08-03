@@ -3,7 +3,6 @@ from entidades.ingrediente import Ingrediente
 from telas.tela_ingrediente import TelaIngrediente
 
 
-
 class ControladorIngredientes(Controlador):
     def __init__(self):
         super().__init__(TelaIngrediente(self))
