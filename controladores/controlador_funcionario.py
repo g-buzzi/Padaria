@@ -29,6 +29,18 @@ class ControladorFuncionario(Controlador):
 
         dados_funcionario = self.tela.salva_funcionario('Cadastra')
 
+        if len(self.__funcionarios) > 0:
+            for funcionario in self.__funcionarios:
+                if funcionario.matricula == dados_funcionario['matricula']:
+                    self.tela.mensagem_erro('Já existe funcionário cadastrado com essa matrícula')
+
+                else:
+                    self.salva_dados_funcionario(dados_funcionario)
+
+        else:
+            self.salva_dados_funcionario(dados_funcionario)
+
+    def salva_dados_funcionario(self, dados_funcionario):
         self.__funcionarios.append(Funcionario(
             dados_funcionario['matricula'],
             dados_funcionario['nome'],
@@ -39,6 +51,7 @@ class ControladorFuncionario(Controlador):
         ))
 
     def lista_funcionarios(self):
+        self.tela.adiciona_cabecalho('Lista Funcionários')
 
         for funcionario in self.__funcionarios:
             self.tela.lista_funcionario({
@@ -52,7 +65,7 @@ class ControladorFuncionario(Controlador):
 
     def remove_funcionario(self):
 
-        matricula = self.tela.pesquisa_funcionario('Remove')
+        matricula = self.tela.solicita_matricula_funcionario('Remove')
 
         for funcionario in self.__funcionarios:
             if funcionario.matricula == matricula:
@@ -60,7 +73,7 @@ class ControladorFuncionario(Controlador):
 
     def pesquisa_funcionario(self):
 
-        matricula = self.tela.pesquisa_funcionario('Pesquisa')
+        matricula = self.tela.solicita_matricula_funcionario('Pesquisa')
 
         for funcionario in self.__funcionarios:
             if funcionario.matricula == matricula:
@@ -75,7 +88,7 @@ class ControladorFuncionario(Controlador):
 
     def altera_funcionario(self):
 
-        matricula = self.tela.pesquisa_funcionario('Altera')
+        matricula = self.tela.solicita_matricula_funcionario('Altera')
 
         for funcionario in self.__funcionarios:
             if funcionario.matricula == matricula:

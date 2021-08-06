@@ -33,7 +33,10 @@ class TelaFuncionario(Tela):
             '\n'
         )
 
-    def pesquisa_funcionario(self, acao_chave: str):
-        print('------- ' + acao_chave + ' Funcionário -------')
+    def adiciona_cabecalho(self, mensagem: str):
+        print('------- ' + mensagem + ' -------')
+
+    def solicita_matricula_funcionario(self, mensagem: str):
+        self.adiciona_cabecalho(mensagem)
         return self.le_num_inteiro('Matrícula: ')
 
