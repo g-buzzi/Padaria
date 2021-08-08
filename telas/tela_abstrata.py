@@ -28,12 +28,6 @@ class Tela(ABC):
                 return inteiro
             except ValueError:
                 self.mensagem_erro("Valor incorreto. Digite um número inteiro válido")
-                if valores_validos:
-                    print("Valores Válidos:", end=" ")
-                    for valor in valores_validos[:-1]:
-                        print(valor, end=", ")
-                    print(valores_validos[-1])
-                    print()
 
     def le_num_fracionario(self, mensagem: str = "Digite um valor"):
         while True:
@@ -46,6 +40,10 @@ class Tela(ABC):
     def le_string(self, mensagem: str = "Digite algo"):
         string = input(mensagem)
         return string
+
+    def cabecalho(self, mensagem: str):
+        print("-------- " + mensagem + " --------")
+        print()
 
     def mensagem_erro(self, mensagem: str):
         print()

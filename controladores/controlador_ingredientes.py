@@ -4,9 +4,10 @@ from telas.tela_ingrediente import TelaIngrediente
 
 
 class ControladorIngredientes(Controlador):
-    def __init__(self):
+    def __init__(self, controlador_central):
         super().__init__(TelaIngrediente(self))
         self.__ingredientes = {}
+        self.__controlador_central = controlador_central
 
     @property
     def ingredientes(self):
@@ -32,7 +33,7 @@ class ControladorIngredientes(Controlador):
                     if dados["nome"].lower() == ingrediente.nome.lower():
                         self.tela.mensagem_erro("Nome duplicado, tente outro nome")
                 else:
-                    self.__ingredientes[dados["codigo"]] = Ingrediente(dados["nome"], dados["unidade_medida"], dados["preco_unitario"])
+                    self.__ingredientes[dados["codigo"]] = Ingrediente(dados["codigo"], dados["nome"], dados["unidade_medida"], dados["preco_unitario"])
                     self.tela.mensagem("Ingrediente cadastrado com sucesso")
             else:
                 self.tela.mensagem_erro("Código já em uso, tente outro código")
@@ -77,6 +78,7 @@ class ControladorIngredientes(Controlador):
             if dados["codigo"] not in self.__ingredientes.keys():
                 self.__ingredientes.pop(codigo)
                 self.__ingredientes[dados["codigo"]] = ingrediente
+                ingrediente.codigo = dados["codigo"]
                 ingrediente.nome = dados["nome"]
                 ingrediente.unidade_medida = dados["unidade_medida"]
                 ingrediente.preco_unitario = dados["preco_unitario"]
@@ -102,6 +104,7 @@ class ControladorIngredientes(Controlador):
             else:
                 self.__ingredientes.pop(codigo)
         self.__ingredientes[novo_codigo] = ingrediente
+        ingrediente.codigo = novo_codigo
         return novo_codigo
                 
     def altera_nome(self, codigo: int):
@@ -142,6 +145,7 @@ class ControladorIngredientes(Controlador):
                 if opcao == 0:
                     self.tela.mensagem("Remoção cancelada")
                 else:
+                    self.__controlador_central.controlador_receitas.remove_ingrediente_associado_receitas(self.__ingredientes[codigo])
                     self.__ingredientes.pop(codigo)
                     self.tela.mensagem("Ingrediente removido")
             except KeyError:
@@ -176,12 +180,19 @@ class ControladorIngredientes(Controlador):
                 break
 
 
-    def dados_ingrediente(self, codigo: int):
+    def dados_ingrediente(self, codigo: int) -> dict:
         try:
             ingrediente = self.__ingredientes[codigo]
         except KeyError:
             return False
         dados = {"codigo": codigo, "nome": ingrediente.nome, "unidade_medida": ingrediente.unidade_medida, "preco_unitario": ingrediente.preco_unitario, "quantidade_estoque": ingrediente.quantidade_estoque}
         return dados
+
+    def seleciona_ingrediente_por_codigo(self, codigo: int) -> Ingrediente:
+        try:
+            ingrediente = self.__ingredientes[codigo]
+            return ingrediente
+        except KeyError:
+            return False
 
 

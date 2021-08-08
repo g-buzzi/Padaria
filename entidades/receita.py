@@ -8,6 +8,7 @@ class Receita:
         self.__tempo_preparo = tempo_preparo
         self.__rendimento = rendimento
         self.__ingredientes_receita = {}
+        self.__produto_associado = False
 
     @property
     def codigo(self) -> int:
@@ -45,14 +46,26 @@ class Receita:
     def ingredientes_receita(self) -> dict:
         return self.__ingredientes_receita
 
+    @property
+    def produto_associado(self):
+        return self.__produto_associado
+
+    @produto_associado.setter
+    def produto_associado(self, produto_associado):
+        self.__produto_associado = produto_associado
+
+    def remove_produto_associado(self):
+        self.__produto_associado = False
+
     def inclui_ingrediente(self, ingrediente: Ingrediente, quantidade: float):
         self.__ingredientes_receita[ingrediente] = quantidade
 
     def remove_ingrediente(self, ingrediente: Ingrediente):
         self.__ingredientes_receita.pop(ingrediente)
 
+    @property
     def custo_preparo(self) -> float:
         custo = 0
         for ingrediente, quantidade in self.__ingredientes_receita.items():
-            custo += ingrediente.custo_unitario * quantidade
+            custo += ingrediente.preco_unitario * quantidade
         return custo

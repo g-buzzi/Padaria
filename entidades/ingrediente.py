@@ -1,9 +1,18 @@
 class Ingrediente:
-    def __init__(self, nome: str, unidade_medida: str, preco_unitario: float):
+    def __init__(self, codigo: int, nome: str, unidade_medida: str, preco_unitario: float):
+        self.__codigo = codigo
         self.__nome = nome
         self.__unidade_medida = unidade_medida
         self.__preco_unitario = preco_unitario
         self.__quantidade_estoque = 0
+
+    @property
+    def codigo(self) -> int:
+        return self.__codigo
+
+    @codigo.setter
+    def codigo(self, codigo: int):
+        self.__codigo = codigo
 
     @property
     def nome(self) -> str:
