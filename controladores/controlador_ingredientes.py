@@ -32,6 +32,7 @@ class ControladorIngredientes(Controlador):
                 for ingrediente in self.__ingredientes.values():
                     if dados["nome"].lower() == ingrediente.nome.lower():
                         self.tela.mensagem_erro("Nome duplicado, tente outro nome")
+                        break
                 else:
                     self.__ingredientes[dados["codigo"]] = Ingrediente(dados["codigo"], dados["nome"], dados["unidade_medida"], dados["preco_unitario"])
                     self.tela.mensagem("Ingrediente cadastrado com sucesso")
@@ -165,15 +166,13 @@ class ControladorIngredientes(Controlador):
         opcoes = {1: "Continuar pesquisa", 0: "Voltar"}
         while True:
             pesquisa = self.tela.pesquisa_ingrediente_por_nome()
-            resultados = []
+            resultados = False
             for codigo in self.__ingredientes.keys():
                 if pesquisa in self.__ingredientes[codigo].nome.lower():
+                    resultados = True
                     dados = self.dados_ingrediente(codigo)
-                    resultados.append(dados)
-            if resultados:
-                for dados in resultados:
                     self.tela.mostra_ingrediente(dados)
-            else:
+            if not resultados:
                 self.tela.mensagem("Nenhum ingrediente com esse nome foi encontrado") 
             opcao = self.tela.mostra_opcoes(opcoes)
             if opcao == 0:

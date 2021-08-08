@@ -35,14 +35,10 @@ class TelaReceita(Tela):
 
     def alteracao_completa(self, dados_antigos: dict):
         dados = {}
-        print("Código anterior: {}".format(dados_antigos["codigo"]))
-        dados["codigo"] = self.le_num_inteiro("Novo código: ")
-        print("Modo de preparo antigo: {}".format(dados_antigos["modo_preparo"]))
-        dados["modo_preparo"] = self.le_string("Novo modo de preparo: ")
-        print("Tempo de preparo antigo: {:.2f}".format(dados_antigos["tempo_preparo"]))
-        dados["tempo_preparo"] = self.le_num_fracionario("Novo tempo de preparo: ")
-        print("Rendimento antigo: {}".format(dados_antigos["rendimento"]))
-        dados["rendimento"] = self.le_num_inteiro("Novo rendimento: ")
+        dados["codigo"] = self.altera_codigo(dados_antigos["codigo"])
+        dados["modo_preparo"] = self.altera_modo_preparo(dados_antigos["modo_preparo"])
+        dados["tempo_preparo"] = self.altera_tempo_preparo(dados_antigos["tempo_preparo"])
+        dados["rendimento"] = self.altera_rendimento(dados_antigos["rendimento"])
         print()
         return dados
 

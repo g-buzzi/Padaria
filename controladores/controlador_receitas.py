@@ -1,5 +1,4 @@
 from entidades.ingrediente import Ingrediente
-from telas.tela_abstrata import Tela
 from controladores.controlador_abstrato import Controlador
 from entidades.receita import Receita
 from telas.tela_receita import TelaReceita
@@ -177,7 +176,7 @@ class ControladorReceitas(Controlador):
                 if receita.produto_associado:
                     self.tela.mensagem("Esta receita está associada a um produto")
                 else:   
-                    opcao = self.tela.mostra_opcoes(opcoes_remocao, "Confirmar remoção")
+                    opcao = self.tela.mostra_opcoes(opcoes_remocao, "Confirmar Exclusão")
                     if opcao == 1:
                         self.__receitas.pop(codigo_receita)
                         receita.produto_associado.remove_receita()
@@ -239,7 +238,11 @@ class ControladorReceitas(Controlador):
             if opcao == 0:
                 break
             
-
+    def seleciona_receita_por_codigo(self, codigo: int):
+        try:
+            return self.__receitas[codigo]
+        except KeyError:
+            return False
 
     def remove_ingrediente_associado_receitas(self, ingrediente_removido: Ingrediente):
         for receita in self.__receitas.values():

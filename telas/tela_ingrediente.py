@@ -1,4 +1,3 @@
-from entidades.ingrediente import Ingrediente
 from telas.tela_abstrata import Tela
 
 class TelaIngrediente(Tela):
@@ -23,18 +22,10 @@ class TelaIngrediente(Tela):
 
     def alteracao_completa(self, dados_antigos: dict) -> dict:
         novos_dados = {}
-        print("Código anterior: {}".format(dados_antigos["codigo"]))
-        novos_dados["codigo"] = self.le_num_inteiro("Novo código: ")
-        print()
-        print("Nome anterior: {}".format(dados_antigos["nome"]))
-        novos_dados["nome"] = self.le_string("Novo nome: ")
-        print()
-        print("Unidade de medida anterior: {}".format(dados_antigos["unidade_medida"]))
-        novos_dados["unidade_medida"] = self.le_string("Nova unidade de medida: ")
-        print()
-        print("Preço por {} anterior: R${:.2f}".format(dados_antigos["unidade_medida"], dados_antigos["preco_unitario"]))
-        novos_dados["preco_unitario"] = self.le_num_fracionario("Novo preço por {}: R$".format(novos_dados["unidade_medida"]))
-        print()
+        novos_dados["codigo"] = self.altera_codigo(dados_antigos["codigo"])
+        novos_dados["nome"] = self.altera_nome(dados_antigos["nome"])
+        novos_dados["unidade_medida"] = self.altera_unidade(dados_antigos["unidade_medida"])
+        novos_dados["preco_unitario"] = self.altera_preco(dados_antigos["unidade_medida"], dados_antigos["preco_unitario"], novos_dados["unidade_medida"])
         return novos_dados
 
     def altera_codigo(self, codigo: int) -> int:
@@ -55,9 +46,11 @@ class TelaIngrediente(Tela):
         print()
         return unidade
 
-    def altera_preco(self, unidade: str, preco: float) -> float:
+    def altera_preco(self, unidade: str, preco: float, unidade_nova = False) -> float:
+        if unidade_nova is False:
+            unidade_nova = unidade
         print("Preço por {} anterior: R${:.2f}".format(unidade, preco))
-        preco = self.le_num_fracionario("Novo preço por {}: R$".format(unidade))
+        preco = self.le_num_fracionario("Novo preço por {}: R$".format(unidade_nova))
         print()
         return preco
 
@@ -76,12 +69,12 @@ class TelaIngrediente(Tela):
         print("---- {} ----".format(dados_ingrediente["nome"]))
         print("Código: {}".format(dados_ingrediente["codigo"]))
         print("Unidade de Medida: {}".format(dados_ingrediente["unidade_medida"]))
-        print("Preço em {}: R${:.2f}".format(dados_ingrediente["unidade_medida"], dados_ingrediente["preco_unitario"]))
+        print("Preço por {}: R${:.2f}".format(dados_ingrediente["unidade_medida"], dados_ingrediente["preco_unitario"]))
         print()
 
     def pesquisa_ingrediente_por_nome(self) -> str:
         self.cabecalho("Pesquisar Ingredientes")
-        pesquisa = self.le_string("Digite o nome do produto para pesquisa: ")
+        pesquisa = self.le_string("Digite o nome do ingrediente para pesquisa: ")
         print()
         print("---- Resultados para '{}' ----".format(pesquisa))
         print()
