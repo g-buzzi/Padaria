@@ -6,9 +6,9 @@ class TelaFuncionario(Tela):
     def __init__(self, controlador):
         super().__init__(controlador)
 
-    def salva_funcionario(self, acao_chave: str = None):
-        if acao_chave:
-            print('------- ' + acao_chave + ' Funcionário -------')
+    def recebe_dados_funcionarios(self, mensagem: str = None):
+        if mensagem:
+            self.adiciona_cabecalho(mensagem)
 
         return {
             'matricula': self.le_num_inteiro('Matrícula: '),
@@ -19,7 +19,7 @@ class TelaFuncionario(Tela):
             'salario': self.le_num_fracionario('Salário: ')
         }
 
-    def lista_funcionario(self, dados_funcionario):
+    def mostra_funcionario(self, dados_funcionario):
 
         print(
             'Matrícula:', dados_funcionario['matricula'],

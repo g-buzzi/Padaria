@@ -13,7 +13,7 @@ class ControladorFuncionario(Controlador):
 
     def abre_tela_inicial(self):
         switcher = {0: False, 1: self.cadastra_funcionario, 2: self.altera_funcionario, 3: self.remove_funcionario,
-                    4: self.lista_funcionarios, 5: self.pesquisa_funcionario}
+                    4: self.lista_funcionarios, 5: self.seleciona_funcionario_por_matricula}
 
         opcoes = {1: "Cadastrar", 2: "Alterar", 3: "Remover", 4: "Listar", 5: "Pesquisar", 0: "Voltar"}
         while True:
@@ -25,21 +25,29 @@ class ControladorFuncionario(Controlador):
                 break
 
     def cadastra_funcionario(self):
-        # opcoes = {1: "Continuar cadastrando", 0: "Voltar"}
+        opcoes = {1: "Continuar cadastrando", 0: "Voltar"}
 
-        dados_funcionario = self.tela.salva_funcionario('Cadastra')
-
-        if len(self.__funcionarios) > 0:
-            for funcionario in self.__funcionarios:
-                if funcionario.matricula == dados_funcionario['matricula']:
-                    self.tela.mensagem_erro('Já existe funcionário cadastrado com essa matrícula')
-
-                else:
-                    self.salva_dados_funcionario(dados_funcionario)
-
+        while True:
+            dados_funcionario = self.tela.recebe_dados_funcionarios('Cadastra')
+            resposta = self.verifica_se_ja_existe_funcionario_com_matricula(dados_funcionario['matricula'])
+            if resposta:
+                self.tela.mensagem_erro('Já existe funcionário com essa matrícula.')
+                break
+            else:
+                self.salva_dados_funcionario(dados_funcionario)
+            
+            opcao = self.tela.mostra_opcoes(opcoes)
+            if opcao == 0:
+                break
+            
+    def verifica_se_ja_existe_funcionario_com_matricula(self, matricula):
+        for funcionario in self.__funcionarios:
+            if matricula == funcionario.matricula:
+                return funcionario
+                break                
         else:
-            self.salva_dados_funcionario(dados_funcionario)
-
+            return None
+        
     def salva_dados_funcionario(self, dados_funcionario):
         self.__funcionarios.append(Funcionario(
             dados_funcionario['matricula'],
@@ -54,7 +62,7 @@ class ControladorFuncionario(Controlador):
         self.tela.adiciona_cabecalho('Lista Funcionários')
 
         for funcionario in self.__funcionarios:
-            self.tela.lista_funcionario({
+            self.tela.mostra_funcionario({
                 'matricula': funcionario.matricula,
                 'nome': funcionario.nome,
                 'cpf': funcionario.cpf,
@@ -65,19 +73,22 @@ class ControladorFuncionario(Controlador):
 
     def remove_funcionario(self):
 
-        matricula = self.tela.solicita_matricula_funcionario('Remove')
+        matricula = self.tela.solicita_matricula_funcionario('Remove Funcionário')
 
         for funcionario in self.__funcionarios:
             if funcionario.matricula == matricula:
                 self.__funcionarios.remove(funcionario)
+                break
+            else:
+                self.tela.mensagem_erro('Funcionário não encontrado!')
 
-    def pesquisa_funcionario(self):
+    def seleciona_funcionario_por_matricula(self):
 
-        matricula = self.tela.solicita_matricula_funcionario('Pesquisa')
+        matricula = self.tela.solicita_matricula_funcionario('Pesquisa Funcionário')
 
         for funcionario in self.__funcionarios:
             if funcionario.matricula == matricula:
-                self.tela.lista_funcionario({
+                self.tela.mostra_funcionario({
                     'matricula': funcionario.matricula,
                     'nome': funcionario.nome,
                     'cpf': funcionario.cpf,
@@ -87,21 +98,33 @@ class ControladorFuncionario(Controlador):
                 })
 
     def altera_funcionario(self):
+        opcoes = {1: "Continuar alterando", 0: "Voltar"}
 
-        matricula = self.tela.solicita_matricula_funcionario('Altera')
+        while True:
+            matricula = self.tela.solicita_matricula_funcionario('Altera Funcionário')
 
-        for funcionario in self.__funcionarios:
-            if funcionario.matricula == matricula:
+            funcionario = self.verifica_se_ja_existe_funcionario_com_matricula(matricula)
+            
+            if isinstance(funcionario, Funcionario):
 
-                dados_atualizados = self.tela.salva_funcionario()
+                dados_atualizados = self.tela.recebe_dados_funcionarios()
+                resposta = self.verifica_se_ja_existe_funcionario_com_matricula(dados_atualizados['matricula'])
+                
+                if resposta is None:
 
-                index = self.__funcionarios.index(funcionario)
-
-                self.__funcionarios[index] = Funcionario(
-                    dados_atualizados['matricula'],
-                    dados_atualizados['nome'],
-                    dados_atualizados['cpf'],
-                    dados_atualizados['telefone'],
-                    dados_atualizados['email'],
-                    dados_atualizados['salario']
-                )
+                    funcionario.matricula = dados_atualizados['matricula']
+                    funcionario.nome = dados_atualizados['nome']
+                    funcionario.cpf = dados_atualizados['cpf']
+                    funcionario.telefone = dados_atualizados['telefone']
+                    funcionario.email = dados_atualizados['email']
+                    funcionario.salario = dados_atualizados['salario']
+                    
+                else:
+                    self.tela.mensagem_erro('Essa matrícula já existe. Tente novamente!')
+                    break
+            else:
+                self.tela.mensagem_erro('Funcionário não encontrado!')
+                break
+            opcao = self.tela.mostra_opcoes(opcoes)
+            if opcao == 0:
+                break
