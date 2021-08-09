@@ -1,4 +1,5 @@
 from controladores.controlador_abstrato import Controlador
+from entidades import ingrediente
 from entidades.ingrediente import Ingrediente
 from telas.tela_ingrediente import TelaIngrediente
 
@@ -49,88 +50,76 @@ class ControladorIngredientes(Controlador):
         opcoes = {1: "Alterar outro ingrediente", 0: "Voltar"}
         while True:
             codigo = self.tela.altera_ingrediente()
-            dados = self.dados_ingrediente(codigo)
-            if dados is False:
+            try:
+                ingrediente = self.__ingredientes[codigo]
+            except KeyError:
                 self.tela.mensagem_erro("Nenhum ingrediente com este código existe")
                 continue
             while True:
-                self.tela.mostra_ingrediente(dados)
+                self.mostra_ingrediente(ingrediente)
                 opcao = self.tela.mostra_opcoes(opcoes_alteracao, "---- Opções de Alteração ----")
                 funcao = funcoes_alteracao[opcao]
                 if funcao is False:
                     break
-                codigo = funcao(codigo)
-                dados = self.dados_ingrediente(codigo)
+                funcao(ingrediente)
             opcao = self.tela.mostra_opcoes(opcoes)
             if opcao == 0:
                 break
         
 
-    def alteracao_completa(self, codigo: int):
-        dados = self.dados_ingrediente(codigo)
+    def alteracao_completa(self, ingrediente: Ingrediente):
+        dados = self.dados_ingrediente(ingrediente)
         dados = self.tela.alteracao_completa(dados)
-        ingrediente = self.__ingredientes[codigo]
         if dados["nome"] != ingrediente.nome:
             for ing in self.__ingredientes.values():
-                if dados["nome"].lower() == ing.nome.lower():
+                if dados["nome"].lower() == ing.nome.lower() and ing != ingrediente:
                     self.tela.mensagem_erro("Nome duplicado, alterações não serão realizadas")
-                    return codigo
-        if codigo != dados["codigo"]:
+                    return
+        if ingrediente.codigo != dados["codigo"]:
             if dados["codigo"] not in self.__ingredientes.keys():
-                self.__ingredientes.pop(codigo)
+                self.__ingredientes.pop(ingrediente.codigo)
                 self.__ingredientes[dados["codigo"]] = ingrediente
                 ingrediente.codigo = dados["codigo"]
-                ingrediente.nome = dados["nome"]
-                ingrediente.unidade_medida = dados["unidade_medida"]
-                ingrediente.preco_unitario = dados["preco_unitario"]
-                self.tela.mensagem("Alterações realizadas com sucesso")
-                return dados["codigo"]
             else:
                 self.tela.mensagem_erro("Código em uso, as alteraçoes não serão realizadas")
-                return codigo
-        else:
-            ingrediente.nome = dados["nome"]
-            ingrediente.unidade_medida = dados["unidade_medida"]
-            ingrediente.preco_unitario = dados["preco_unitario"] 
-            self.tela.mensagem("Alterações realizadas com sucesso") 
-            return codigo
+                return
+        ingrediente.nome = dados["nome"]
+        ingrediente.unidade_medida = dados["unidade_medida"]
+        ingrediente.preco_unitario = dados["preco_unitario"] 
+        self.tela.mensagem("Alterações realizadas com sucesso") 
 
-    def altera_codigo(self, codigo: int):
-        novo_codigo = self.tela.altera_codigo(codigo)
-        ingrediente = self.__ingredientes[codigo]
-        if novo_codigo != codigo:
+    def altera_codigo(self, ingrediente: Ingrediente):
+        novo_codigo = self.tela.altera_codigo(ingrediente.codigo)
+        if novo_codigo != ingrediente.codigo:
             if novo_codigo in self.__ingredientes.keys():
                 self.tela.mensagem_erro("Código em uso, as alteraçoes não serão realizadas")
-                return codigo
+                return
             else:
-                self.__ingredientes.pop(codigo)
+                self.__ingredientes.pop(ingrediente.codigo)
         self.__ingredientes[novo_codigo] = ingrediente
         ingrediente.codigo = novo_codigo
-        return novo_codigo
+        self.tela.mensagem("Alterações realizadas com sucesso") 
                 
-    def altera_nome(self, codigo: int):
-        ingrediente = self.__ingredientes[codigo]
+    def altera_nome(self, ingrediente: Ingrediente):
         novo_nome = self.tela.altera_nome(ingrediente.nome)
         if novo_nome != ingrediente.nome:
             for ing in self.__ingredientes.values():
-                if ing.nome.lower() == novo_nome.lower():
+                if ing.nome.lower() == novo_nome.lower() and ing != ingrediente:
                     self.tela.mensagem_erro("Nome duplicado, alterações não serão realizadas")
-                    return codigo
+                    return
         ingrediente.nome = novo_nome
-        return codigo
+        self.tela.mensagem("Alterações realizadas com sucesso") 
 
 
-    def altera_unidade(self, codigo: int):
-        ingrediente = self.__ingredientes[codigo]
+    def altera_unidade(self, ingrediente: Ingrediente):
         nova_unidade = self.tela.altera_unidade(ingrediente.unidade_medida)
         ingrediente.unidade_medida = nova_unidade
-        return codigo
+        self.tela.mensagem("Alterações realizadas com sucesso") 
 
-    def altera_preco(self, codigo: int):
-        ingrediente = self.__ingredientes[codigo]
+    def altera_preco(self, ingrediente: Ingrediente):
         novo_preco = self.tela.altera_preco(ingrediente.unidade_medida, ingrediente.preco_unitario)
         ingrediente.preco_unitario = novo_preco
-        return codigo
+        self.tela.mensagem("Alterações realizadas com sucesso") 
 
     def remove_ingrediente(self):
         opcoes_remover = {1: "Remover ingrediente", 0: "Cancelar"} 
@@ -138,10 +127,8 @@ class ControladorIngredientes(Controlador):
         while True:
             codigo = self.tela.remove_ingrediente()
             try:
-                dados = self.dados_ingrediente(codigo)
-                if dados is False:
-                    raise KeyError
-                self.tela.mostra_ingrediente(dados)
+                ingrediente = self.__ingredientes[codigo]
+                self.mostra_ingrediente(ingrediente)
                 opcao = self.tela.mostra_opcoes(opcoes_remover, "Remover o ingrediente?")
                 if opcao == 0:
                     self.tela.mensagem("Remoção cancelada")
@@ -156,22 +143,19 @@ class ControladorIngredientes(Controlador):
                 break
 
     def lista_ingredientes(self):
-        dados_ingredientes = []
-        for codigo in self.__ingredientes.keys():
-            dados = self.dados_ingrediente(codigo)
-            dados_ingredientes.append(dados)
-        self.tela.lista_ingredientes(dados_ingredientes)
+        self.tela.cabecalho("Listar Ingredientes")
+        for ingrediente in self.__ingredientes.values():
+            self.mostra_ingrediente(ingrediente)
 
     def pesquisa_ingrediente_por_nome(self):
         opcoes = {1: "Continuar pesquisa", 0: "Voltar"}
         while True:
             pesquisa = self.tela.pesquisa_ingrediente_por_nome()
             resultados = False
-            for codigo in self.__ingredientes.keys():
-                if pesquisa in self.__ingredientes[codigo].nome.lower():
+            for ingrediente in self.__ingredientes.values():
+                if pesquisa in ingrediente.nome.lower():
                     resultados = True
-                    dados = self.dados_ingrediente(codigo)
-                    self.tela.mostra_ingrediente(dados)
+                    self.mostra_ingrediente(ingrediente)
             if not resultados:
                 self.tela.mensagem("Nenhum ingrediente com esse nome foi encontrado") 
             opcao = self.tela.mostra_opcoes(opcoes)
@@ -179,13 +163,13 @@ class ControladorIngredientes(Controlador):
                 break
 
 
-    def dados_ingrediente(self, codigo: int) -> dict:
-        try:
-            ingrediente = self.__ingredientes[codigo]
-        except KeyError:
-            return False
-        dados = {"codigo": codigo, "nome": ingrediente.nome, "unidade_medida": ingrediente.unidade_medida, "preco_unitario": ingrediente.preco_unitario, "quantidade_estoque": ingrediente.quantidade_estoque}
+    def dados_ingrediente(self, ingrediente: Ingrediente) -> dict:
+        dados = {"codigo": ingrediente.codigo, "nome": ingrediente.nome, "unidade_medida": ingrediente.unidade_medida, "preco_unitario": ingrediente.preco_unitario, "quantidade_estoque": ingrediente.quantidade_estoque}
         return dados
+
+    def mostra_ingrediente(self, ingrediente: Ingrediente):
+        dados = self.dados_ingrediente(ingrediente)
+        self.tela.mostra_ingrediente(dados)
 
     def seleciona_ingrediente_por_codigo(self, codigo: int) -> Ingrediente:
         try:

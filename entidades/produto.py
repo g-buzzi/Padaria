@@ -47,9 +47,10 @@ class Produto:
 
     @receita.setter
     def receita(self, receita: Receita):
-        self.__receita.remove_produto_associado()
-        self.__receita.produto_associado = self
+        if self.__receita is not False:
+            self.__receita.remove_produto_associado()
         self.__receita = receita
+        self.__receita.produto_associado = self
 
     @property
     def quantidade_estoque(self) -> int:
@@ -58,3 +59,10 @@ class Produto:
     @quantidade_estoque.setter
     def quantidade_estoque(self, quantidade_estoque: int):
         self.__quantidade_estoque = quantidade_estoque
+
+    @property
+    def custo_unitario(self) -> float:
+        return self.__receita.custo_preparo/self.__receita.rendimento
+
+    def remove_receita(self):
+        self.__receita = False

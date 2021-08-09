@@ -50,10 +50,12 @@ class ControladorReceitas(Controlador):
 
     
     def inclui_ingrediente_receita(self, receita: Receita):
-        codigo_ingrediente, quantidade = self.tela.inclui_ingrediente_receita()
+        codigo_ingrediente = self.tela.le_codigo_ingrediente()
         ingrediente = self.__controlador_central.controlador_ingredientes.seleciona_ingrediente_por_codigo(codigo_ingrediente)
         if ingrediente:
+            self.__controlador_central.controlador_ingredientes.mostra_ingrediente(ingrediente)
             if ingrediente not in self.__receitas[receita.codigo].ingredientes_receita.keys():
+                quantidade = self.tela.le_quantidade_ingrediente()
                 self.__receitas[receita.codigo].inclui_ingrediente(ingrediente, quantidade)
                 self.tela.mensagem("Ingrediente adicionado com sucesso")
             else:
@@ -86,8 +88,7 @@ class ControladorReceitas(Controlador):
                 self.tela.mensagem_erro("Nenhuma receita com este código existe")
                 continue
             while True:
-                dados = self.dados_receita(receita.codigo)
-                self.tela.mostra_receita(dados)
+                self.mostra_receita(receita)
                 opcao = self.tela.mostra_opcoes(opcoes_alteracao, "---- Opções de Alteração ----")
                 funcao = funcoes_alteracao[opcao]
                 if funcao is False:
@@ -98,7 +99,7 @@ class ControladorReceitas(Controlador):
                 break
 
     def alteracao_completa(self, receita: Receita):
-        dados_antigos = self.dados_receita(receita.codigo)
+        dados_antigos = self.dados_receita(receita)
         dados = self.tela.alteracao_completa(dados_antigos)
         if receita.codigo != dados["codigo"]:
             if dados["codigo"] in self.__receitas.keys():
@@ -150,7 +151,6 @@ class ControladorReceitas(Controlador):
                 break
             funcao(receita)
 
-
     def altera_quantidade_ingrediente(self, receita: Receita):
         codigo_ingrediente = self.tela.altera_quantidade_pegar_codigo()
         ingrediente = self.__controlador_central.controlador_ingredientes.seleciona_ingrediente_por_codigo(codigo_ingrediente)
@@ -175,49 +175,47 @@ class ControladorReceitas(Controlador):
                 receita = self.__receitas[codigo_receita]
                 if receita.produto_associado:
                     self.tela.mensagem("Esta receita está associada a um produto")
-                else:   
-                    opcao = self.tela.mostra_opcoes(opcoes_remocao, "Confirmar Exclusão")
-                    if opcao == 1:
-                        self.__receitas.pop(codigo_receita)
+                opcao = self.tela.mostra_opcoes(opcoes_remocao, "Confirmar Exclusão")
+                if opcao == 1:
+                    self.__receitas.pop(codigo_receita)
+                    if receita.produto_associado:
                         receita.produto_associado.remove_receita()
-                        self.tela.mensagem("Receita excluida com sucesso")
-                    else:
-                        self.tela.mensagem("Exclusão Cancelada")
+                    self.tela.mensagem("Receita excluida com sucesso")
+                else:
+                    self.tela.mensagem("Exclusão Cancelada")
             except KeyError:
                 self.tela.mensagem_erro("Não existe ingrediente com este código")
             opcao = self.tela.mostra_opcoes(opcoes)
             if opcao == 0:
                 break
 
-
     def lista_receitas(self):
         self.tela.cabecalho("Lista de Receitas")
-        for codigo_receita in self.__receitas.keys():
-            dados = self.dados_receita(codigo_receita)
-            self.tela.mostra_receita(dados)
+        for receita in self.__receitas.values():
+            self.mostra_receita(receita)
 
-    def dados_receita(self, codigo_receita: int):
+    def dados_receita(self, receita: Receita):
         dados = {}
         dados_ingredientes = []
-        dados["codigo"] = codigo_receita
-        try:
-            receita = self.__receitas[codigo_receita]
-            if receita.produto_associado is not False:
-                dados["produto_associado"] = receita.produto_associado.nome
-            else:
-                dados["produto_associado"] = False
-            dados["modo_preparo"] = receita.modo_preparo
-            dados["tempo_preparo"] = receita.tempo_preparo
-            dados["rendimento"] = receita.rendimento
-            dados["custo_preparo"] = receita.custo_preparo
-            for ingrediente, quantidade in receita.ingredientes_receita.items():
-                dados_ingrediente = self.__controlador_central.controlador_ingredientes.dados_ingrediente(ingrediente.codigo)
-                dados_ingrediente["quantidade"] = quantidade
-                dados_ingredientes.append(dados_ingrediente)
-            dados["dados_ingredientes"] = dados_ingredientes
-            return dados
-        except KeyError:
-            return False
+        dados["codigo"] = receita.codigo
+        if receita.produto_associado is not False:
+            dados["produto_associado"] = receita.produto_associado.nome
+        else:
+            dados["produto_associado"] = False
+        dados["modo_preparo"] = receita.modo_preparo
+        dados["tempo_preparo"] = receita.tempo_preparo
+        dados["rendimento"] = receita.rendimento
+        dados["custo_preparo"] = receita.custo_preparo
+        for ingrediente, quantidade in receita.ingredientes_receita.items():
+            dados_ingrediente = self.__controlador_central.controlador_ingredientes.dados_ingrediente(ingrediente)
+            dados_ingrediente["quantidade"] = quantidade
+            dados_ingredientes.append(dados_ingrediente)
+        dados["dados_ingredientes"] = dados_ingredientes
+        return dados
+
+    def mostra_receita(self, receita):
+        dados = self.dados_receita(receita)
+        self.tela.mostra_receita(dados)
 
     def pesquisar_por_ingrediente(self):
         opcoes = {1: "Continuar a pesquisar", 0: "Voltar"}
@@ -226,14 +224,13 @@ class ControladorReceitas(Controlador):
             ingrediente = self.__controlador_central.controlador_ingredientes.seleciona_ingrediente_por_codigo(codigo_ingrediente)
             if ingrediente is False:
                 self.tela.mensagem_erro("Não existe ingrediente com este código")
-                continue
-            for receita in self.__receitas.values():
-                try:
-                    receita.ingredientes_receita[ingrediente]
-                    dados = self.dados_receita(receita.codigo)
-                    self.tela.mostra_receita(dados)
-                except KeyError:
-                    continue
+            else:
+                for receita in self.__receitas.values():
+                    try:
+                        receita.ingredientes_receita[ingrediente]
+                        self.mostra_receita(receita)
+                    except KeyError:
+                        continue
             opcao = self.tela.mostra_opcoes(opcoes)
             if opcao == 0:
                 break

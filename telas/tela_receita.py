@@ -14,12 +14,16 @@ class TelaReceita(Tela):
         print()
         return dados
 
-    def inclui_ingrediente_receita(self):
+    def le_codigo_ingrediente(self):
         print("--- Adicionar Ingrediente ---")
         codigo = self.le_num_inteiro("Código do Ingrediente: ")
+        print()
+        return codigo
+
+    def le_quantidade_ingrediente(self):
         quantidade = self.le_num_fracionario("Quantidade: ")
         print()
-        return codigo, quantidade
+        return quantidade
 
     def remove_ingrediente_receita(self):
         print("--- Remover ingrediente ---")
@@ -55,7 +59,7 @@ class TelaReceita(Tela):
         return novo_modo_preparo
 
     def altera_tempo_preparo(self, tempo_preparo_antigo: float):
-        print("Tempo de preparo antigo: {:.2f}".format(tempo_preparo_antigo))
+        print("Tempo de preparo antigo: {:.2f} min".format(tempo_preparo_antigo))
         novo_tempo_preparo = self.le_num_fracionario("Novo tempo de preparo: ")
         print()
         return novo_tempo_preparo
@@ -78,6 +82,12 @@ class TelaReceita(Tela):
         print()
         return nova_quantidade
 
+    def remove_receita(self):
+        self.cabecalho("Remover receita")
+        codigo = self.le_num_inteiro("Código da receita a ser removida: ")
+        print()
+        return codigo
+
     def pesquisar_por_ingrediente(self):
         self.cabecalho("Pesquisar por ingrediente")
         codigo_ingrediente = self.le_num_inteiro("Codigo do ingrediente: ")
@@ -91,7 +101,7 @@ class TelaReceita(Tela):
             print("------------------------")
         print("Código: {}".format(dados["codigo"]))
         print("Modo de preparo: {}".format(dados["modo_preparo"]))
-        print("Tempo de preparo: {}".format(dados["tempo_preparo"]))
+        print("Tempo de preparo: {} min".format(dados["tempo_preparo"]))
         print("Rendimento: {} unidades".format(dados["rendimento"]))
         print("Custo de preparo: R${:.2f}".format(dados["custo_preparo"]))
         print()

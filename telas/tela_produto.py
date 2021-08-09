@@ -74,7 +74,7 @@ class TelaProduto(Tela):
         print("Código: {}".format(dados["codigo"]))
         print("Descrição: {}".format(dados["descricao"]))
         print("Preço de Venda: R${:.2f}".format(dados["preco_venda"]))
-        print("Custo de preparo: R${:.2f}".format(dados["custo_preparo"]))
+        print("Custo de preparo: R${:.2f}".format(dados["custo_unitario"]))
         print()
 
     def pesquisa_produto_por_nome(self):
