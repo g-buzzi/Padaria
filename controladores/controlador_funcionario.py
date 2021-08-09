@@ -7,9 +7,10 @@ from entidades.funcionario import Funcionario
 
 class ControladorFuncionario(Controlador):
 
-    def __init__(self):
+    def __init__(self, controlador_central):
         super().__init__(TelaFuncionario(self))
         self.__funcionarios: List[Funcionario] = []
+        self.__controlador_central = controlador_central
 
     def abre_tela_inicial(self):
         switcher = {0: False, 1: self.cadastra_funcionario, 2: self.altera_funcionario, 3: self.remove_funcionario,
