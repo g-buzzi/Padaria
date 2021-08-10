@@ -44,8 +44,7 @@ class ControladorFuncionario(Controlador):
     def verifica_se_ja_existe_funcionario_com_matricula(self, matricula):
         for funcionario in self.__funcionarios:
             if matricula == funcionario.matricula:
-                return funcionario
-                break                
+                return funcionario                
         else:
             return None
         
@@ -76,12 +75,12 @@ class ControladorFuncionario(Controlador):
 
         matricula = self.tela.solicita_matricula_funcionario('Remove Funcionário')
 
-        for funcionario in self.__funcionarios:
-            if funcionario.matricula == matricula:
-                self.__funcionarios.remove(funcionario)
-                break
-            else:
-                self.tela.mensagem_erro('Funcionário não encontrado!')
+        funcionario = self.verifica_se_ja_existe_funcionario_com_matricula(matricula)
+        if isinstance(funcionario, Funcionario):
+            self.__funcionarios.remove(funcionario)
+            self.tela.mensagem("Funcionário removido com sucesso") 
+        else:
+            self.tela.mensagem_erro('Funcionário não encontrado!')
 
     def seleciona_funcionario_por_matricula(self):
 
@@ -119,6 +118,8 @@ class ControladorFuncionario(Controlador):
                     funcionario.telefone = dados_atualizados['telefone']
                     funcionario.email = dados_atualizados['email']
                     funcionario.salario = dados_atualizados['salario']
+                    
+                    self.tela.mensagem("Alterações realizadas com sucesso") 
                     
                 else:
                     self.tela.mensagem_erro('Essa matrícula já existe. Tente novamente!')
