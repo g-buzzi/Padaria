@@ -11,7 +11,13 @@ class ControladorCentral(Controlador):
 
     def __init__(self):
         super().__init__(TelaCentral(self))
-        self.__controladores = {0: False, 1: ControladorIngredientes(self), 2: ControladorReceitas(self), 3: ControladorProdutos(self), 4: ControladorEstoque(self), 5: ControladorFuncionario(self)}
+        self.__controlador_ingrediente = ControladorIngredientes(self)
+        self.__controlador_receita = ControladorReceitas(self)
+        self.__controlador_produto = ControladorProdutos(self)
+        self.__controlador_estoque = ControladorEstoque(self)
+        self.__controlador_funcionario = ControladorFuncionario(self)
+        
+        self.__controladores = {0: False, 1: self.controlador_ingrediente, 2: self.controlador_receita, 3: self.controlador_produto, 4: self.controlador_estoque, 5: self.controlador_funcionario}
 
     def abre_tela_inicial(self):
         opcoes = {1: "Ingredientes", 2: "Receitas", 3: "Produtos", 4: "Estoque", 5: "Funcionário", 0: "Sair"}
@@ -25,18 +31,22 @@ class ControladorCentral(Controlador):
                 controlador.inicia()
 
     @property
-    def controlador_ingredientes(self):
-        return self.__controladores[1]
+    def controlador_ingrediente(self):
+        return self.__controlador_ingrediente
     
     @property
-    def controlador_receitas(self):
-        return self.__controladores[2]
+    def controlador_receita(self):
+        return self.__controlador_receita
 
     @property
-    def controlador_produtos(self):
-        return self.__controladores[3]
+    def controlador_produto(self):
+        return self.__controlador_produto
 
     @property
     def controlador_estoque(self):
-        return self.__controladores[4]
+        return self.__controlador_estoque
+    
+    @property
+    def controlador_funcionario(self):
+        return self.__controlador_funcionario
 
