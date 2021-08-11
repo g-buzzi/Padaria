@@ -1,9 +1,9 @@
-from pessoa import Pessoa
+from entidades.pessoa import Pessoa
 
 class Cliente(Pessoa):
 
     def __init__(self, codigo: int, nome: str, cpf: str, telefone: int, email: str, endereco: str):
-        super.__init__(nome, cpf, telefone, email)
+        super().__init__(nome, cpf, telefone, email)
         self.__codigo = codigo
         self.__endereco = endereco
 
