@@ -74,15 +74,20 @@ class ControladorCliente(Controlador):
             })
             
     def remove_cliente(self):
-    
-        cpf = self.tela.solicita_cpf_cliente('Remove Cliente')
+        opcoes = {1: "Continuar removendo", 0: "Voltar"}
+        while True:
+            cpf = self.tela.solicita_cpf_cliente('Remove Cliente')
 
-        cliente = self.verifica_se_ja_existe_cliente_com_cpf(cpf)
-        if isinstance(cliente, Cliente):
-            self.__clientes.remove(cliente)
-            self.tela.mensagem("Cliente removido com sucesso") 
-        else:
-            self.tela.mensagem_erro('Cliente não encontrado!')
+            cliente = self.verifica_se_ja_existe_cliente_com_cpf(cpf)
+            if isinstance(cliente, Cliente):
+                self.__clientes.remove(cliente)
+                self.tela.mensagem("Cliente removido com sucesso") 
+            else:
+                self.tela.mensagem_erro('Cliente não encontrado!')
+                
+            opcao = self.tela.mostra_opcoes(opcoes)
+            if opcao == 0:
+                break
             
     def seleciona_cliente_por_cpf(self):
     
@@ -112,7 +117,7 @@ class ControladorCliente(Controlador):
                 dados_atualizados = self.tela.recebe_dados_cliente()
                 resposta = self.verifica_se_ja_existe_cliente_com_cpf(dados_atualizados['cpf'])
                 
-                if resposta is None:
+                if cliente.cpf == dados_atualizados['cpf'] or resposta is None:
 
                     cliente.codigo = dados_atualizados['codigo']
                     cliente.nome = dados_atualizados['nome']
