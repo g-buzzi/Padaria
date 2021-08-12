@@ -4,3 +4,4 @@ __pycache__/
 controladores/__pycache__/
 entidades/__pycache__/
 telas/__pycache__/
+*.asta.lock

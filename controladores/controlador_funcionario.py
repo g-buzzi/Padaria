@@ -72,15 +72,20 @@ class ControladorFuncionario(Controlador):
             })
 
     def remove_funcionario(self):
+        opcoes = {1: "Continuar removendo", 0: "Voltar"}
+        while True:
+            matricula = self.tela.solicita_matricula_funcionario('Remove Funcionário')
 
-        matricula = self.tela.solicita_matricula_funcionario('Remove Funcionário')
-
-        funcionario = self.verifica_se_ja_existe_funcionario_com_matricula(matricula)
-        if isinstance(funcionario, Funcionario):
-            self.__funcionarios.remove(funcionario)
-            self.tela.mensagem("Funcionário removido com sucesso") 
-        else:
-            self.tela.mensagem_erro('Funcionário não encontrado!')
+            funcionario = self.verifica_se_ja_existe_funcionario_com_matricula(matricula)
+            if isinstance(funcionario, Funcionario):
+                self.__funcionarios.remove(funcionario)
+                self.tela.mensagem("Funcionário removido com sucesso") 
+            else:
+                self.tela.mensagem_erro('Funcionário não encontrado!')
+            
+            opcao = self.tela.mostra_opcoes(opcoes)
+            if opcao == 0:
+                break
 
     def seleciona_funcionario_por_matricula(self):
 
@@ -110,7 +115,7 @@ class ControladorFuncionario(Controlador):
                 dados_atualizados = self.tela.recebe_dados_funcionarios()
                 resposta = self.verifica_se_ja_existe_funcionario_com_matricula(dados_atualizados['matricula'])
                 
-                if resposta is None:
+                if funcionario.matricula == dados_atualizados['matricula'] or resposta is None:
 
                     funcionario.matricula = dados_atualizados['matricula']
                     funcionario.nome = dados_atualizados['nome']

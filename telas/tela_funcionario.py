@@ -8,7 +8,7 @@ class TelaFuncionario(Tela):
 
     def recebe_dados_funcionarios(self, mensagem: str = None):
         if mensagem:
-            self.adiciona_cabecalho(mensagem)
+            self.cabecalho(mensagem)
 
         return {
             'matricula': self.le_num_inteiro('Matrícula: '),
@@ -33,10 +33,7 @@ class TelaFuncionario(Tela):
             '\n'
         )
 
-    def adiciona_cabecalho(self, mensagem: str):
-        print('------- ' + mensagem + ' -------')
-
     def solicita_matricula_funcionario(self, mensagem: str):
-        self.adiciona_cabecalho(mensagem)
+        self.cabecalho(mensagem)
         return self.le_num_inteiro('Matrícula: ')
 
