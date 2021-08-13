@@ -2,7 +2,7 @@ from controladores.controlador_abstrato import Controlador
 from telas.tela_cliente import TelaCliente
 from entidades.cliente import Cliente
 
-class ControladorCliente(Controlador):
+class ControladorClientes(Controlador):
 
     def __init__(self, controlador_central):
         super().__init__(TelaCliente(self))

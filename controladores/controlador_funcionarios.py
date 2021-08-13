@@ -5,7 +5,7 @@ from telas.tela_funcionario import TelaFuncionario
 from entidades.funcionario import Funcionario
 
 
-class ControladorFuncionario(Controlador):
+class ControladorFuncionarios(Controlador):
 
     def __init__(self, controlador_central):
         super().__init__(TelaFuncionario(self))
@@ -59,7 +59,7 @@ class ControladorFuncionario(Controlador):
         ))
 
     def lista_funcionarios(self):
-        self.tela.adiciona_cabecalho('Lista Funcionários')
+        self.tela.cabecalho('Lista Funcionários')
 
         for funcionario in self.__funcionarios:
             self.tela.mostra_funcionario({
