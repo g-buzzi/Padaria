@@ -7,19 +7,17 @@ class Venda():
     def __init__(
         self, 
         codigo: int, 
-        itens: Item,
-        preco_final: float, 
         atendente: Funcionario,
         encomenda: bool):
         
         self.__codigo = codigo 
-        self.__itens = [itens]
-        self.__preco_final = preco_final,
         self.__atendente = atendente
         self.__encomenda = encomenda
+        self.__itens: list[Item] = []
+        self.__preco_final = None,
         self.__desconto: float = None
         self.__cliente: Cliente = None
-        self.__data_entrega: Date = None
+        self.__data_entrega = None
         self.__entregue: bool = None
         
     
@@ -32,7 +30,7 @@ class Venda():
         self.__codigo = codigo
         
     @property
-    def itens(self) -> List[Item]:
+    def itens(self) -> list:
         return self.__itens
     
     @itens.setter 
@@ -41,11 +39,17 @@ class Venda():
         
     @property
     def preco_final(self) -> float:
+        self.calcula_preco_final()
+        
         return self.__preco_final
     
-    @preco_final.setter 
-    def preco_final(self, preco_final):
-        self.__preco_final = preco_final
+    def calcula_preco_final(self):
+        total = 0.0
+        for item in self.__itens:
+            total = total + (item.quantidade * item.produto.preco_venda)
+            
+        self.__preco_final = total
+            
         
     @property
     def atendente(self) -> Funcionario:
@@ -80,7 +84,7 @@ class Venda():
         self.__cliente = cliente
         
     @property
-    def data_entrega(self) -> Date:
+    def data_entrega(self):
         return self.__data_entrega
     
     @data_entrega.setter 
