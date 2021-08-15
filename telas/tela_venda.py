@@ -39,7 +39,7 @@ class TelaVenda(Tela):
     def mostra_item(self, itens):
         print('Itens:')
         for item in itens:
-            print('Produto:', item.produto.nome.ljust(10), 'Quantidade:', item.quantidade.ljust(10), 'Valor unitário R$:', item.produto.preco_venda)
+            print('Produto:', item.produto.nome, '\tQuantidade:', item.quantidade, '\tValor unitário R$:', item.produto.preco_venda)
             
     def mostra_valores(self, dados_valores):
         print(
@@ -74,3 +74,6 @@ class TelaVenda(Tela):
     
     def solicita_cpf_cliente(self):
         return self.le_string('Cpf do cliente: ')
+    
+    def solicita_matricula_funcionario(self):        
+        return self.le_num_inteiro('Matrícula do atendente: ')
