@@ -33,11 +33,13 @@ class Tela(ABC):
             except ValueError:
                 self.mensagem_erro("Valor incorreto. Digite um número inteiro válido")
 
-    def le_num_fracionario(self, mensagem: str = "Digite um valor"):
+    def le_num_fracionario(self, mensagem: str = "Digite um valor", digitos: int = 2):
         while True:
             try:
-                fracionario = round(float(input(mensagem)), 2)
-                return fracionario
+                fracionario = round(float(input(mensagem)), digitos)
+                if fracionario > 0:
+                    return fracionario
+                self.mensagem_erro("Valor incorreto. Digite um número maior que 0.")
             except ValueError:
                 self.mensagem_erro("Valor incorreto. Digite um número fracionário válido.")
     
