@@ -125,7 +125,7 @@ class ControladorEstoque(Controlador):
                     return
                 quantidade = self.tela.le_quantidade()
                 for ingrediente, quantidade_ingrediente in produto.receita.ingredientes_receita.items():
-                    if ingrediente.quantidade_estoque <= quantidade_ingrediente * quantidade:
+                    if ingrediente.quantidade_estoque < quantidade_ingrediente * quantidade:
                         self.tela.mensagem_erro("Ingredientes insuficientes para a produção")
                         break 
                 else:
@@ -155,8 +155,11 @@ class ControladorEstoque(Controlador):
         else:
             self.__controlador_central.controlador_ingredientes.mostra_ingrediente(ingrediente)
             quantidade = self.tela.le_quantidade()
-            self.baixa(ingrediente, quantidade)
-            self.tela.mensagem("Baixa registrada com sucesso")
+            if quantidade <= ingrediente.quantidade_estoque:
+                self.baixa(ingrediente, quantidade)
+                self.tela.mensagem("Baixa registrada com sucesso")
+            else:
+                self.tela.mensagem_erro("Baixa excede o número de ingredientes em estoque")
 
     def realiza_baixa_produto(self):
         self.tela.cabecalho("Baixa de Produto")
@@ -168,8 +171,11 @@ class ControladorEstoque(Controlador):
         else:
             self.__controlador_central.controlador_produtos.mostra_produto(produto)
             quantidade = self.tela.le_quantidade()
-            self.baixa(produto, quantidade)
-            self.tela.mensagem("Baixa registrada com sucesso")
+            if quantidade <= produto.quantidade_estoque:
+                self.baixa(produto, quantidade)
+                self.tela.mensagem("Baixa registrada com sucesso")
+            else:
+                self.tela.mensagem_erro("Baixa excede o número de produtos em estoque")
 
     def dados_estoque(self, estoque):
         dados = {}

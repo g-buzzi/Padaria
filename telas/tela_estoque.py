@@ -4,8 +4,8 @@ class TelaEstoque(Tela):
     def __init__(self, controlador):
         super().__init__(controlador)
 
-    def le_quantidade(self) -> int:
-        quantidade = self.le_num_inteiro("Quantidade: ")
+    def le_quantidade(self) -> float:
+        quantidade = self.le_num_fracionario("Quantidade: ")
         print()
         return quantidade
 
