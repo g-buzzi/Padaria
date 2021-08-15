@@ -1,21 +1,18 @@
-from entidades.produto import Produto
 from entidades.movimentacao import Movimentacao
 from controladores.controlador_abstrato import Controlador
-from entidades.ingrediente import Ingrediente
-from entidades.produto import Produto
 from telas.tela_estoque import TelaEstoque
 from datetime import datetime
+from entidades.estoque import Estoque
 
 class ControladorEstoque(Controlador):
     def __init__(self, controlador_central):
         super().__init__(TelaEstoque(self))
-        self.__balanco = 0
-        self.__movimentacoes = []
+        self.__estoque = Estoque()
         self.__controlador_central = controlador_central
 
     @property
-    def movimentacoes(self):
-        return self.__movimentacoes
+    def estoque(self):
+        return self.__estoque
 
     @property
     def produtos_estoque(self):
@@ -36,42 +33,17 @@ class ControladorEstoque(Controlador):
             else:
                 break
 
-    def venda(self, produto: Produto, quantidade: int):
-        try:
-            if quantidade > produto.quantidade_estoque:
-                raise ValueError
-            valor_total = produto.preco_venda * quantidade
-            self.__movimentacoes.append(Movimentacao("Venda", produto.nome, quantidade, valor_total))
-            produto.quantidade_estoque -= quantidade
-            self.__balanco += valor_total
-        except ValueError:
-            self.tela.mensagem_erro("Produto com estoque insuficiente")
-
-    def compra(self, ingrediente: Ingrediente, quantidade: int):
-        valor_total = ingrediente.preco_unitario * quantidade
-        self.__movimentacoes.append(Movimentacao("Compra", ingrediente.nome, quantidade, valor_total))
-        self.__balanco -= valor_total
-        ingrediente.quantidade_estoque += quantidade
-
-    def producao(self, produto: Produto, quantidade: int):
-        self.__movimentacoes.append(Movimentacao("Produção", produto.nome, quantidade * produto.receita.rendimento, 0))
-        for ingrediente, quantidade_ingrediente in produto.receita.ingredientes_receita.items(): #Não diminiu
-            ingrediente.quantidade_estoque -= (quantidade * quantidade_ingrediente)
-        produto.quantidade_estoque += quantidade * produto.receita.rendimento 
-
-    def baixa(self, estoque, quantidade: int):
-        self.__movimentacoes.append(Movimentacao("Baixa", estoque.nome, quantidade, 0))
-        estoque.quantidade_estoque -= quantidade
-
-
     def processa_venda(self, venda):
-        pass
+        try:
+            self.__estoque.venda(venda.produto, venda.quantidade)
+        except ValueError:
+            self.tela.mensagem_erro("Quantidade insuficente de {} no estoque".format(venda.produto.nome))
 
     def lista_estoque(self):
         self.tela.cabecalho("Lista do Estoque")
         self.lista_produtos()
         self.lista_ingredientes()
-        self.tela.balanco(self.__balanco)
+        self.tela.balanco(self.__estoque.balanco)
 
     def lista_ingredientes(self):
         self.tela.cabecalho("Ingredientes")
@@ -87,7 +59,7 @@ class ControladorEstoque(Controlador):
 
     def lista_movimentacoes(self):
         self.tela.cabecalho("Movimentações")
-        for movimentacao in self.__movimentacoes:
+        for movimentacao in self.__estoque.movimentacoes:
             dados = self.dados_movimentacao(movimentacao)
             self.tela.mostra_movimentacao(dados)
 
@@ -103,8 +75,11 @@ class ControladorEstoque(Controlador):
             else:
                 self.__controlador_central.controlador_ingredientes.mostra_ingrediente(ingrediente)
                 quantidade = self.tela.le_quantidade()
-                self.compra(ingrediente, quantidade)
-                self.tela.mensagem("Compra registrada com sucesso")
+                if quantidade != 0:
+                    self.__estoque.compra(ingrediente, quantidade)
+                    self.tela.mensagem("Compra registrada com sucesso")
+                else:
+                    self.tela.mensagem_erro("Quantidade igual a 0, compra cancelada")
             opcao = self.tela.mostra_opcoes(opcoes)
             if opcao == 0:
                 break
@@ -123,14 +98,19 @@ class ControladorEstoque(Controlador):
                 if produto.receita is False:
                     self.tela.mensagem_erro("O produto não possui receita")
                     return
-                quantidade = self.tela.le_quantidade()
-                for ingrediente, quantidade_ingrediente in produto.receita.ingredientes_receita.items():
-                    if ingrediente.quantidade_estoque < quantidade_ingrediente * quantidade:
-                        self.tela.mensagem_erro("Ingredientes insuficientes para a produção")
-                        break 
                 else:
-                    self.producao(produto, quantidade)
-                    self.tela.mensagem("Produção registrada com sucesso")
+                    quantidade = self.tela.le_quantidade()
+                    if quantidade == 0:
+                        self.tela.mensagem_erro("Quantidade igual a 0, produção cancelada")
+                        return
+                    else:
+                        for ingrediente, quantidade_ingrediente in produto.receita.ingredientes_receita.items():
+                            if ingrediente.quantidade_estoque < quantidade_ingrediente * quantidade:
+                                self.tela.mensagem_erro("Ingredientes insuficientes para a produção")
+                                break 
+                        else:
+                            self.__estoque.producao(produto, quantidade)
+                            self.tela.mensagem("Produção registrada com sucesso")
             opcao = self.tela.mostra_opcoes(opcoes)
             if opcao == 0:
                 break
@@ -155,8 +135,10 @@ class ControladorEstoque(Controlador):
         else:
             self.__controlador_central.controlador_ingredientes.mostra_ingrediente(ingrediente)
             quantidade = self.tela.le_quantidade()
-            if quantidade <= ingrediente.quantidade_estoque:
-                self.baixa(ingrediente, quantidade)
+            if quantidade == 0:
+                self.tela.mensagem_erro("Quantidade igual a 0, baixa cancelada")
+            elif quantidade <= ingrediente.quantidade_estoque:
+                self.__estoque.baixa(ingrediente, quantidade)
                 self.tela.mensagem("Baixa registrada com sucesso")
             else:
                 self.tela.mensagem_erro("Baixa excede o número de ingredientes em estoque")
@@ -171,27 +153,29 @@ class ControladorEstoque(Controlador):
         else:
             self.__controlador_central.controlador_produtos.mostra_produto(produto)
             quantidade = self.tela.le_quantidade()
-            if quantidade <= produto.quantidade_estoque:
-                self.baixa(produto, quantidade)
+            if quantidade == 0:
+                self.tela.mensagem_erro("Quantidade igual a 0, baixa cancelada")
+            elif quantidade <= produto.quantidade_estoque:
+                self.__estoque.baixa(produto, quantidade)
                 self.tela.mensagem("Baixa registrada com sucesso")
             else:
                 self.tela.mensagem_erro("Baixa excede o número de produtos em estoque")
 
-    def dados_estoque(self, estoque):
+    def dados_estoque(self, estocado):
         dados = {}
-        dados["nome"] = estoque.nome
-        dados["quantidade"] = estoque.quantidade_estoque
+        dados["nome"] = estocado.nome
+        dados["quantidade"] = estocado.quantidade_estoque
         return dados
 
-    def mostra_estoque(self, estoque, tipo = "Produto"):
-        dados = self.dados_estoque(estoque)
+    def mostra_estoque(self, estocado, tipo = "Produto"):
+        dados = self.dados_estoque(estocado)
         self.tela.mostra_estoque(dados, tipo)
 
     def dados_movimentacao(self, movimentacao: Movimentacao):
         dados = {}
         dados["data"] = movimentacao.data.strftime("%d/%m/%Y, %H:%M:%S")
         dados["tipo"] = movimentacao.tipo
-        dados["nome_produto"] = movimentacao.nome_produto
+        dados["nome_produto"] = movimentacao.movimentado.nome
         dados["quantidade"] = movimentacao.quantidade
         dados["valor_total"] = movimentacao.valor_total
         return dados

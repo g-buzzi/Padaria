@@ -26,17 +26,20 @@ class Tela(ABC):
                 inteiro = int(inteiro)  #Talvez impedir valores menores que 0
                 if valores_validos and inteiro not in valores_validos:
                     raise ValueError
-                return inteiro
+                if inteiro < 0:
+                    self.mensagem_erro("Valor incorreto. Digite um valor maior que 0")
+                else:
+                    return inteiro
             except ValueError:
                 self.mensagem_erro("Valor incorreto. Digite um número inteiro válido")
 
     def le_num_fracionario(self, mensagem: str = "Digite um valor"):
         while True:
             try:
-                fracionario = input(mensagem)
-                return float(fracionario)
+                fracionario = round(float(input(mensagem)), 2)
+                return fracionario
             except ValueError:
-                self.mensagem_erro("Valor incorreto. Digite um número fracionário.")
+                self.mensagem_erro("Valor incorreto. Digite um número fracionário válido.")
     
     def le_string(self, mensagem: str = "Digite algo"):
         string = input(mensagem)

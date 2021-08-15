@@ -56,8 +56,11 @@ class ControladorReceitas(Controlador):
             self.__controlador_central.controlador_ingredientes.mostra_ingrediente(ingrediente)
             if ingrediente not in self.__receitas[receita.codigo].ingredientes_receita.keys():
                 quantidade = self.tela.le_quantidade_ingrediente()
-                self.__receitas[receita.codigo].inclui_ingrediente(ingrediente, quantidade)
-                self.tela.mensagem("Ingrediente adicionado com sucesso")
+                if quantidade != 0:
+                    self.__receitas[receita.codigo].inclui_ingrediente(ingrediente, quantidade)
+                    self.tela.mensagem("Ingrediente adicionado com sucesso")
+                else:
+                    self.tela.mensagem_erro("Quantidade igual a 0, inclusão cancelada")
             else:
                 self.tela.mensagem_erro("Ingrediente já adicionado")
         else:

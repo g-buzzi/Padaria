@@ -1,10 +1,10 @@
 from datetime import datetime
 
 class Movimentacao:
-    def __init__(self, tipo: str, nome_produto: str, quantidade: int, valor_total: float):
+    def __init__(self, tipo: str, movimentado, quantidade: int, valor_total: float):
         self.__data = datetime.now()
         self.__tipo = tipo
-        self.__nome_produto = nome_produto
+        self.__movimentado = movimentado
         self.__quantidade = quantidade
         self.__valor_total = valor_total
 
@@ -13,8 +13,8 @@ class Movimentacao:
         return self.__tipo
 
     @property
-    def nome_produto(self):
-        return self.__nome_produto
+    def movimentado(self):
+        return self.__movimentado
 
     @property
     def quantidade(self):
