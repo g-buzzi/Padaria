@@ -48,6 +48,9 @@ class Venda():
         for item in self.__itens:
             total = total + (item.quantidade * item.produto.preco_venda)
             
+        if self.__desconto > 0:
+            total = total - (total * self.__desconto/100)
+            
         self.__preco_final = total
             
         
