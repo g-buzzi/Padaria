@@ -14,12 +14,26 @@ class ControladorVendas(Controlador):
         switcher = {
             0: False, 
             1: self.cadastra_venda,
-            2: False,
-            3: False,
-            4: self.lista_vendas,
-            5: self.seleciona_venda_por_codigo}
+            2: self.lista_encomendas,
+            3: self.lista_vendas_por_cliente,
+            4: self.lista_vendas_por_funcionario,
+            5: self.lista_vendas,
+            6: self.conclui_encomenda,
+            7: self.cancela_encomenda,
+            8: self.seleciona_venda_por_codigo}
 
-        opcoes = {1: "Cadastrar", 2: "Alterar", 3: "Remover", 4: "Listar", 5: "Pesquisar", 0: "Voltar"}
+        opcoes = {
+            1: "Cadastrar Venda", 
+            2: "Listar Encomendas", 
+            3: "Listar Vendas por Cliente", 
+            4: 'Listar Vendas por Atendente', 
+            5: "Listar Vendas", 
+            6: 'Concluir Encomenda', 
+            7: 'Cancelar Encomenda',
+            8: "Pesquisar Venda", 
+            0: "Voltar"
+        }
+        
         while True:
             opcao = self.tela.mostra_opcoes(opcoes, "--------- Vendas ---------")
             funcao_escolhida = switcher[opcao]
@@ -109,44 +123,89 @@ class ControladorVendas(Controlador):
         self.tela.cabecalho('Lista Vendas')
 
         for venda in self.__vendas:
-            if venda.encomenda == 's':
+            self.lista_venda()
+                
+    def lista_venda(self, venda): 
+        if venda.encomenda == 's':
                 self.tela.mostra_dados_encomenda({
                     'data_entrega': venda.data_entrega,
                     'entregue': venda.entregue
                 })
                 
-            if venda.cliente or venda.encomenda == 's':
-                self.tela.mostra_cliente({
-                    'cliente': venda.cliente.nome
-                })
-            
-            self.tela.mostra_venda({
-                'codigo': venda.codigo,
-                'atendente': venda.atendente.nome,
-                'encomenda': venda.encomenda
+        if venda.cliente or venda.encomenda == 's':
+            self.tela.mostra_cliente({
+                'cliente': venda.cliente.nome
             })
+        
+        self.tela.mostra_venda({
+            'codigo': venda.codigo,
+            'atendente': venda.atendente.nome,
+            'encomenda': venda.encomenda
+        })
+        
+        self.tela.mostra_item(venda.itens)
+        
+        self.tela.mostra_valores({
+            'preco_final': venda.preco_final,
+            'desconto': venda.desconto,
+        })
             
-            self.tela.mostra_item(venda.itens)
+    def lista_encomendas(self):
+        for venda in self.__vendas:
+            if venda.encomenda == 's' and venda.entregue == False:
+                self.lista_venda(venda)
+                
+    def lista_vendas_por_cliente(self):
+        cpf = self.tela.solicita_cpf_cliente
+        
+        for venda in self.__vendas:
+            if venda.cliente.cpf == cpf:
+                self.lista_venda(venda)
+                
+            else:
+                self.tela.mensagem_erro('Não existe nenhuma venda para esse cliente informado.')
+        else:
+            self.tela.mensagem_erro('Não existem vendas cadastradas. Cadastre uma primeiro.')
             
-            self.tela.mostra_valores({
-                'preco_final': venda.preco_final,
-                'desconto': venda.desconto,
-            })
+    def lista_vendas_por_funcionario(self):
+        matricula = self.tela.solicita_matricula_funcionario
+        
+        for venda in self.__vendas:
+            if venda.atendente.matricula == matricula:
+                self.lista_venda(venda)
+                
+            else:
+                self.tela.mensagem_erro('Não existe nenhuma venda realizada por esse funcionário.')
+        else:
+            self.tela.mensagem_erro('Não existem vendas cadastradas. Cadastre uma primeiro.')
+            
+    
+    def conclui_encomenda(self):
+        codigo_venda = self.tela.solicita_codigo_venda('Concluir encomenda')
+        venda = self.verifica_se_ja_existe_venda_com_codigo(codigo_venda)
+        
+        if isinstance(venda, Venda) and venda.encomenda == 's':
+            venda.entregue = True
+        else:
+            self.tela.mensagem_erro('Não existe encomenda ou código incorreto.')
+            
+    def cancela_encomenda(self):
+        codigo_venda = self.tela.solicita_codigo_venda('Cancelar encomenda')
+        venda = self.verifica_se_ja_existe_venda_com_codigo(codigo_venda)
+        
+        if isinstance(venda, Venda) and venda.encomenda == 's':
+            self.__vendas.remove(venda)
+        else:
+            self.tela.mensagem_erro('Não existe encomenda ou código incorreto.')
+            
+        
                  
     def seleciona_venda_por_codigo(self):
         
         codigo = self.tela.solicita_codigo_venda('Pesquisa Venda')
-
-        for venda in self.__vendas:
-            if venda.codigo == codigo:
-                self.tela.mostra_venda({
-                    'codigo': venda.codigo,
-                    'atendente': venda.atendente,
-                    'encomenda': venda.encomenda,
-                    'itens': venda.itens,
-                    'preco_final': venda.preco_final,
-                    'desconto': venda.desconto,
-                    'cliente': venda.cliente,
-                    'data_entrega': venda.data_entrega,
-                    'entregue': venda.entregue
-                })
+        venda = verifica_se_ja_existe_venda_com_codigo(codigo)
+        
+        if isinstance(venda, Venda):
+            self.lista_venda(venda)
+        else:
+            self.tela.mensagem_erro('Não existe venda ou código incorreto.')

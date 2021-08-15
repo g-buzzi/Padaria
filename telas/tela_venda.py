@@ -71,3 +71,6 @@ class TelaVenda(Tela):
     def solicita_desconto(self):
         
         return self.le_num_inteiro('Desconto (%): ')
+    
+    def solicita_cpf_cliente(self):
+        return self.le_string('Cpf do cliente: ')
