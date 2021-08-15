@@ -32,17 +32,17 @@ class ControladorProdutos(Controlador):
                 for produto in self.__produtos.values():
                     if dados["nome"].lower() == produto.nome.lower():
                         self.tela.mensagem_erro("Nome duplicado")
-                        continue
-                if receita is False:
-                    self.tela.mensagem_erro("Não exite receita com esse código")
-                    continue
-                if receita.produto_associado is not False:
-                    self.tela.mensagem_erro("Receita já associada a um produto")
-                    continue
-                produto = Produto(dados["codigo"], dados["nome"], dados["preco_venda"], dados["descricao"], receita)
-                self.__produtos[dados["codigo"]] = produto
-                receita.produto_associado = produto
-                self.tela.mensagem("Produto cadastrado com sucesso")
+                        break
+                else:
+                    if receita is False:
+                        self.tela.mensagem_erro("Não exite receita com esse código")
+                    elif receita.produto_associado is not False:
+                        self.tela.mensagem_erro("Receita já associada a um produto")
+                    else:
+                        produto = Produto(dados["codigo"], dados["nome"], dados["preco_venda"], dados["descricao"], receita)
+                        self.__produtos[dados["codigo"]] = produto
+                        receita.produto_associado = produto
+                        self.tela.mensagem("Produto cadastrado com sucesso")
             else:
                 self.tela.mensagem_erro("Código já em uso")
             opcao = self.tela.mostra_opcoes(opcoes)

@@ -16,7 +16,7 @@ class ControladorReceitas(Controlador):
         return self.__receitas
 
     def abre_tela_inicial(self):
-        switcher = {0: False, 1: self.registra_receita, 2: self.altera_receita, 3: self.remove_receita, 4: self.lista_receitas, 5: self.pesquisar_por_ingrediente}
+        switcher = {0: False, 1: self.registra_receita, 2: self.altera_receita, 3: self.remove_receita, 4: self.lista_receitas, 5: self.pesquisa_por_ingrediente}
         opcoes = {1: "Cadastrar", 2: "Alterar", 3: "Remover", 4: "Listar", 5: "Pesquisar", 0: "Voltar"}
         while True:
             opcao = self.tela.mostra_opcoes(opcoes, "--------- Receitas ---------")
@@ -56,8 +56,11 @@ class ControladorReceitas(Controlador):
             self.__controlador_central.controlador_ingredientes.mostra_ingrediente(ingrediente)
             if ingrediente not in self.__receitas[receita.codigo].ingredientes_receita.keys():
                 quantidade = self.tela.le_quantidade_ingrediente()
-                self.__receitas[receita.codigo].inclui_ingrediente(ingrediente, quantidade)
-                self.tela.mensagem("Ingrediente adicionado com sucesso")
+                if quantidade != 0:
+                    self.__receitas[receita.codigo].inclui_ingrediente(ingrediente, quantidade)
+                    self.tela.mensagem("Ingrediente adicionado com sucesso")
+                else:
+                    self.tela.mensagem_erro("Quantidade igual a 0, inclusão cancelada")
             else:
                 self.tela.mensagem_erro("Ingrediente já adicionado")
         else:
@@ -217,10 +220,10 @@ class ControladorReceitas(Controlador):
         dados = self.dados_receita(receita)
         self.tela.mostra_receita(dados)
 
-    def pesquisar_por_ingrediente(self):
+    def pesquisa_por_ingrediente(self):
         opcoes = {1: "Continuar a pesquisar", 0: "Voltar"}
         while True:
-            codigo_ingrediente = self.tela.pesquisar_por_ingrediente()
+            codigo_ingrediente = self.tela.pesquisa_por_ingrediente()
             ingrediente = self.__controlador_central.controlador_ingredientes.seleciona_ingrediente_por_codigo(codigo_ingrediente)
             if ingrediente is False:
                 self.tela.mensagem_erro("Não existe ingrediente com este código")

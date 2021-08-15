@@ -1,13 +1,13 @@
+from entidades.estocado import Estocado
 from entidades.receita import Receita
 
-class Produto:
+class Produto(Estocado):
     def __init__(self, codigo: int, nome: str, preco_venda: float, descricao: str, receita: Receita):
+        super().__init__(nome)
         self.__codigo = codigo
-        self.__nome = nome
         self.__preco_venda = preco_venda
         self.__descricao = descricao
         self.__receita = receita
-        self.__quantidade_estoque = 0
 
     @property
     def codigo(self) -> int:
@@ -16,14 +16,6 @@ class Produto:
     @codigo.setter
     def codigo(self, codigo: int):
         self.__codigo = codigo
-
-    @property
-    def nome(self) -> str:
-        return self.__nome
-    
-    @nome.setter
-    def nome(self, nome: str):
-        self.__nome = nome
 
     @property
     def preco_venda(self) -> float:
@@ -51,14 +43,6 @@ class Produto:
             self.__receita.remove_produto_associado()
         self.__receita = receita
         self.__receita.produto_associado = self
-
-    @property
-    def quantidade_estoque(self) -> int:
-        return self.__quantidade_estoque
-
-    @quantidade_estoque.setter
-    def quantidade_estoque(self, quantidade_estoque: int):
-        self.__quantidade_estoque = quantidade_estoque
 
     @property
     def custo_unitario(self) -> float:

@@ -88,7 +88,7 @@ class TelaReceita(Tela):
         print()
         return codigo
 
-    def pesquisar_por_ingrediente(self):
+    def pesquisa_por_ingrediente(self):
         self.cabecalho("Pesquisar por ingrediente")
         codigo_ingrediente = self.le_num_inteiro("Codigo do ingrediente: ")
         print()
