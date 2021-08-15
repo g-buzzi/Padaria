@@ -50,7 +50,7 @@ class TelaVenda(Tela):
         
     def solicita_codigo_venda(self, mensagem: str):
         self.cabecalho(mensagem)
-        return self.le_string('Código da venda: ')
+        return self.le_num_inteiro('Código da venda: ')
     
     def solicita_item(self):
         self.cabecalho('Dados do item: ')

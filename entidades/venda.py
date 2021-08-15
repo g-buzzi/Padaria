@@ -67,9 +67,9 @@ class Venda():
         return self.__encomenda
     
     @encomenda.setter 
-    def encomenda(self, encomenda):
-        self.__encomenda = encomenda
-        
+    def encomenda(self, encomenda):        
+        self.__encomenda = encomenda                   
+            
     @property
     def desconto(self) -> float:
         return self.__desconto
@@ -100,6 +100,7 @@ class Venda():
     
     @entregue.setter 
     def entregue(self, entregue):
+        
         self.__entregue = entregue
     
     
