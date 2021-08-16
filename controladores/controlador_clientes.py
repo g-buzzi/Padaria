@@ -39,6 +39,7 @@ class ControladorClientes(Controlador):
                 break
             else:
                 self.salva_dados_cliente(dados_cliente)
+                self.tela.mensagem("Cliente cadastrado com sucesso!")
             
             opcao = self.tela.mostra_opcoes(opcoes)
             if opcao == 0:
@@ -116,7 +117,13 @@ class ControladorClientes(Controlador):
             
             if isinstance(cliente, Cliente):
 
-                dados_atualizados = self.tela.recebe_dados_cliente()
+                dados_atualizados = self.tela.alteracao_cliente({
+                    'nome': cliente.nome,
+                    'cpf': cliente.cpf,
+                    'telefone': cliente.telefone,
+                    'email': cliente.email,
+                    'endereco': cliente.endereco
+                })
                 resposta = self.verifica_se_ja_existe_cliente_com_cpf(dados_atualizados['cpf'])
                 
                 if cliente.cpf == dados_atualizados['cpf'] or resposta is None:

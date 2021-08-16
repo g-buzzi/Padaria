@@ -128,7 +128,14 @@ class ControladorFuncionarios(Controlador):
             
             if isinstance(funcionario, Funcionario):
 
-                dados_atualizados = self.tela.recebe_dados_funcionarios()
+                dados_atualizados = self.tela.alteracao_funcionario({
+                    'matricula': funcionario.matricula,
+                    'nome': funcionario.nome,
+                    'cpf': funcionario.cpf,
+                    'telefone': funcionario.telefone,
+                    'email': funcionario.email,
+                    'salario': funcionario.salario
+                })
                 resposta_matricula = self.verifica_se_ja_existe_funcionario_com_matricula(dados_atualizados['matricula'])
                 resposta_cpf = self.verifica_se_ja_existe_funcionario_com_cpf(dados_atualizados['cpf'])
                 
