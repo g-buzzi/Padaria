@@ -32,4 +32,30 @@ class TelaCliente(Tela):
         
     def solicita_cpf_cliente(self, mensagem: str):
         self.cabecalho(mensagem)
-        return self.le_string('Cpf: ')
+        cpf = self.le_string('Cpf: ')
+        print()
+        return cpf
+    
+    
+    def alteracao_cliente(self, dados_antigos: dict):
+        dados = {}
+        
+        dados["nome"] = self.altera_string(dados_antigos["nome"], 'Nome antigo: ', 'Novo nome: ')
+        dados["cpf"] = self.altera_string(dados_antigos["cpf"], 'Cpf antigo: ', 'Novo Cpf: ')
+        dados["telefone"] = self.altera_inteiro(dados_antigos["telefone"], 'Telefone antigo: ', 'Novo telefone: ')
+        dados["email"] = self.altera_string(dados_antigos["email"], 'E-mail antigo: ', 'Novo e-mail: ')
+        dados["endereco"] = self.altera_string(dados_antigos["endereco"], 'Endereço antigo: ', 'Novo endereço: ')
+        print()
+        return dados
+
+    def altera_inteiro(self, dado_antigo: int, msg_dado_antigo: str, msg_dado_novo: str):
+        print(msg_dado_antigo + "{}".format(dado_antigo))
+        dado_novo = self.le_num_inteiro(msg_dado_novo)
+        print()
+        return dado_novo
+    
+    def altera_string(self, dado_antigo: int, msg_dado_antigo: str, msg_dado_novo: str):
+        print(msg_dado_antigo + "{}".format(dado_antigo))
+        dado_novo = self.le_string(msg_dado_novo)
+        print()
+        return dado_novo
