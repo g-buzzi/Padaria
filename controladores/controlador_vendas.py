@@ -98,7 +98,7 @@ class ControladorVendas(Controlador):
             if opcao == 0:
                 break
         
-    def solicita_cliente(self, venda):
+    def solicita_cliente(self, venda: Venda):
         opcoes = {1: "Sim", 0: "Não"}
         opcao = self.tela.mostra_opcoes(opcoes, "----- Cadastrar cliente? -----")
         
