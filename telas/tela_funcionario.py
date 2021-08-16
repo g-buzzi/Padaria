@@ -42,7 +42,7 @@ class TelaFuncionario(Tela):
         print()
         return dado_novo
     
-    def altera_fracionario(self, dado_antigo: int, msg_dado_antigo: str, msg_dado_novo: str):
+    def altera_fracionario(self, dado_antigo: float, msg_dado_antigo: str, msg_dado_novo: str):
         print(msg_dado_antigo + "{}".format(dado_antigo))
         dado_novo = self.le_num_fracionario(msg_dado_novo)
         print()
