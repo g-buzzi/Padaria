@@ -131,17 +131,21 @@ class ControladorVendas(Controlador):
         while True:
             
             dados_item = self.tela.solicita_item()
-            produto = self.__controlador_central.controlador_produtos.seleciona_produto_por_codigo(dados_item['produto'])
-            if isinstance(produto, Produto):
-                venda.itens.append(Item(produto, dados_item['quantidade']))
-                opcoes = {1: "Continuar", 0: "Voltar" }
-                opcao = self.tela.mostra_opcoes(opcoes)
+            if dados_item['quantidade'] > 0:
+                produto = self.__controlador_central.controlador_produtos.seleciona_produto_por_codigo(dados_item['produto'])
+                if isinstance(produto, Produto):
+                    venda.itens.append(Item(produto, dados_item['quantidade']))
+                    opcoes = {1: "Continuar", 0: "Voltar" }
+                    opcao = self.tela.mostra_opcoes(opcoes)
+                else:
+                    self.tela.mensagem_erro('Tente novamente, produto não encontrado.')
+                    opcoes = {1: "Tentar novamente", 0: "Voltar" if len(venda.itens) > 0 else "Cancelar cadastro da venda" }
+                    opcao = self.tela.mostra_opcoes(opcoes)
+                    
             else:
-                self.tela.mensagem_erro('Tente novamente, produto não encontrado.')
+                self.tela.mensagem_erro('Digite uma quantidade maior que zero!')
                 opcoes = {1: "Tentar novamente", 0: "Voltar" if len(venda.itens) > 0 else "Cancelar cadastro da venda" }
                 opcao = self.tela.mostra_opcoes(opcoes)
-                if opcao == 0:
-                    break 
                 
             if opcao == 0:
                 break    
