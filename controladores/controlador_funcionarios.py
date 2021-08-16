@@ -31,12 +31,17 @@ class ControladorFuncionarios(Controlador):
         while True:
             dados_funcionario = self.tela.recebe_dados_funcionarios('Cadastra')
             self.tela.quebra_linha()
-            resposta = self.verifica_se_ja_existe_funcionario_com_matricula(dados_funcionario['matricula'])
-            if resposta:
+            resposta_matricula = self.verifica_se_ja_existe_funcionario_com_matricula(dados_funcionario['matricula'])
+            resposta_cpf = self.verifica_se_ja_existe_funcionario_com_cpf(dados_funcionario['cpf'])
+            if resposta_matricula:
                 self.tela.mensagem_erro('Já existe funcionário com essa matrícula.')
+                break
+            elif resposta_cpf:
+                self.tela.mensagem_erro('Já existe funcionário com esse cpf.')
                 break
             else:
                 self.salva_dados_funcionario(dados_funcionario)
+                self.tela.mensagem('Funcionário cadastrado com sucesso!')
             
             opcao = self.tela.mostra_opcoes(opcoes)
             if opcao == 0:
@@ -45,6 +50,13 @@ class ControladorFuncionarios(Controlador):
     def verifica_se_ja_existe_funcionario_com_matricula(self, matricula):
         for funcionario in self.__funcionarios:
             if matricula == funcionario.matricula:
+                return funcionario                
+        else:
+            return None
+        
+    def verifica_se_ja_existe_funcionario_com_cpf(self, cpf):
+        for funcionario in self.__funcionarios:
+            if cpf == funcionario.cpf:
                 return funcionario                
         else:
             return None
@@ -117,21 +129,27 @@ class ControladorFuncionarios(Controlador):
             if isinstance(funcionario, Funcionario):
 
                 dados_atualizados = self.tela.recebe_dados_funcionarios()
-                resposta = self.verifica_se_ja_existe_funcionario_com_matricula(dados_atualizados['matricula'])
+                resposta_matricula = self.verifica_se_ja_existe_funcionario_com_matricula(dados_atualizados['matricula'])
+                resposta_cpf = self.verifica_se_ja_existe_funcionario_com_cpf(dados_atualizados['cpf'])
                 
-                if funcionario.matricula == dados_atualizados['matricula'] or resposta is None:
+                if funcionario.matricula == dados_atualizados['matricula'] or resposta_matricula is None:
+                    if funcionario.cpf == dados_atualizados['cpf'] or resposta_cpf is None:
 
-                    funcionario.matricula = dados_atualizados['matricula']
-                    funcionario.nome = dados_atualizados['nome']
-                    funcionario.cpf = dados_atualizados['cpf']
-                    funcionario.telefone = dados_atualizados['telefone']
-                    funcionario.email = dados_atualizados['email']
-                    funcionario.salario = dados_atualizados['salario']
+                        funcionario.matricula = dados_atualizados['matricula']
+                        funcionario.nome = dados_atualizados['nome']
+                        funcionario.cpf = dados_atualizados['cpf']
+                        funcionario.telefone = dados_atualizados['telefone']
+                        funcionario.email = dados_atualizados['email']
+                        funcionario.salario = dados_atualizados['salario']
+                        
+                        self.tela.mensagem("Alterações realizadas com sucesso") 
                     
-                    self.tela.mensagem("Alterações realizadas com sucesso") 
+                    else:
+                        self.tela.mensagem_erro('Esse cpf já está em uso por outro funcionário!')
+                        break
                     
                 else:
-                    self.tela.mensagem_erro('Essa matrícula já existe. Tente novamente!')
+                    self.tela.mensagem_erro('Essa matrícula já está em uso por outro funcionário!')
                     break
             else:
                 self.tela.mensagem_erro('Funcionário não encontrado!')
