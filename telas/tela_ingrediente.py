@@ -4,7 +4,7 @@ class TelaIngrediente(Tela):
     def __init__(self, controlador):
         super().__init__(controlador)
 
-    def registra_ingrediente(self) -> dict:
+    def cadastra_ingrediente(self) -> dict:
         dados = {}
         self.cabecalho("Cadastro de Ingrediente")
         dados["codigo"] = self.le_num_inteiro("Código: ")

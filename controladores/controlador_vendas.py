@@ -12,27 +12,28 @@ class ControladorVendas(Controlador):
         super().__init__(TelaVenda(self))
         self.__vendas: list[Venda] = []
         self.__controlador_central = controlador_central
+        self.__codigo_atual = 0
         
     def abre_tela_inicial(self):
         switcher = {
             0: False, 
             1: self.cadastra_venda,
-            2: self.lista_encomendas,
-            3: self.lista_vendas_por_cliente,
-            4: self.lista_vendas_por_funcionario,
-            5: self.lista_vendas,
-            6: self.conclui_encomenda,
-            7: self.cancela_encomenda,
+            2: self.lista_vendas,
+            3: self.lista_encomendas,
+            4: self.conclui_encomenda,
+            5: self.cancela_encomenda, 
+            6: self.lista_vendas_por_cliente,
+            7: self.lista_vendas_por_funcionario,
             8: self.seleciona_venda_por_codigo}
 
         opcoes = {
             1: "Cadastrar Venda", 
-            2: "Listar Encomendas", 
-            3: "Listar Vendas por Cliente", 
-            4: 'Listar Vendas por Atendente', 
-            5: "Listar Vendas", 
-            6: 'Concluir Encomenda', 
-            7: 'Cancelar Encomenda',
+            2: "Listar Vendas", 
+            3: "Listar Encomendas", 
+            4: 'Concluir Encomenda', 
+            5: "Cancelar Encomenda", 
+            6: 'Listar Vendas por Cliente', 
+            7: 'Listar Vendas por Funcionário',
             8: "Pesquisar Venda", 
             0: "Voltar"
         }
@@ -50,49 +51,51 @@ class ControladorVendas(Controlador):
 
         while True:
             dados_venda = self.tela.recebe_dados_venda('Cadastra Venda')
-            venda = self.verifica_se_ja_existe_venda_com_codigo(dados_venda['codigo'])
-            if isinstance(venda, Venda):
-                self.tela.mensagem_erro('Já existe venda com esse código.')
-                break
+                
+            funcionario = self.__controlador_central.controlador_funcionarios.verifica_se_ja_existe_funcionario_com_matricula(dados_venda['atendente'])
+            if isinstance(funcionario, Funcionario):
+                dados_venda['atendente'] = funcionario
             else:
-                
-                funcionario = self.__controlador_central.controlador_funcionarios.verifica_se_ja_existe_funcionario_com_matricula(dados_venda['atendente'])
-                if isinstance(funcionario, Funcionario):
-                    dados_venda['atendente'] = funcionario
-                else:
-                    self.tela.mensagem_erro('Obrigatório informar um atendente.')
-                    break
-                
-                venda_inicializada = self.inicializa_venda(dados_venda)
-                
-                
-                if dados_venda['encomenda'] == 's':
-                    venda_inicializada = self.solicita_dados_encomenda(venda_inicializada)
-                else:
-                    data = self.solicita_cliente(venda_inicializada)
-                    if isinstance(data, Venda):
-                        venda_inicializada = data
-                    
-                venda_inicializada = self.solicita_itens(venda_inicializada)
-                
-                if isinstance(venda_inicializada, Venda) and venda_inicializada.itens:                
-                    venda_inicializada = self.solicita_desconto(venda_inicializada)
-                else:
-                    self.tela.mensagem_erro('Cadastro de venda cancelado!')
-                    break
-                
-                if isinstance(venda_inicializada, Venda):
+                self.tela.mensagem_erro('Obrigatório informar um atendente.')
+                break
+            
+            venda_inicializada = self.inicializa_venda(dados_venda)
+            self.tela.quebra_linha()
+
+            if dados_venda['encomenda'] == 's':
+                venda_inicializada = self.solicita_dados_encomenda(venda_inicializada)
+            else:
+                data = self.solicita_cliente(venda_inicializada)
+                if isinstance(data, Venda):
+                    venda_inicializada = data
+        
+            self.tela.quebra_linha()
+
+            venda_inicializada = self.solicita_itens(venda_inicializada)
+            
+            if isinstance(venda_inicializada, Venda) and venda_inicializada.itens:                
+                venda_inicializada = self.solicita_desconto(venda_inicializada)
+            else:
+                self.tela.mensagem_erro('Cadastro de venda cancelado!')
+                break
+            
+            if isinstance(venda_inicializada, Venda):
+                try:
+                    if dados_venda["encomenda"] == "s":
+                        self.__controlador_central.controlador_estoque.processa_venda(venda_inicializada)
                     self.__vendas.append(venda_inicializada)
-                    self.tela.mensagem('Venda cadastrada com sucesso!')             
+                    self.__codigo_atual += 1
+                    self.tela.mensagem('Venda cadastrada com sucesso!')  
+                except ValueError:
+                    self.tela.mensagem("Venda cancelada")
             
             opcao = self.tela.mostra_opcoes(opcoes)
             if opcao == 0:
                 break
         
     def solicita_cliente(self, venda):
-        self.tela.cabecalho('Cadastrar cliente?')
         opcoes = {1: "Sim", 0: "Não"}
-        opcao = self.tela.mostra_opcoes(opcoes)
+        opcao = self.tela.mostra_opcoes(opcoes, "----- Cadastrar cliente? -----")
         
         while opcao == 1:
             opcoes = {1: "Tentar novamente", 0: "Voltar"}
@@ -127,19 +130,18 @@ class ControladorVendas(Controlador):
                           
             
     def solicita_itens(self, venda):
-        opcoes = {1: "Continuar", 0: "Concluir"}
         while True:
-            
             dados_item = self.tela.solicita_item()
+            self.tela.quebra_linha()
             if dados_item['quantidade'] > 0:
                 produto = self.__controlador_central.controlador_produtos.seleciona_produto_por_codigo(dados_item['produto'])
                 if isinstance(produto, Produto):
-                    venda.itens.append(Item(produto, dados_item['quantidade']))
+                    venda.inclui_item(produto, dados_item['quantidade'])
                     opcoes = {1: "Continuar", 0: "Voltar" }
                     opcao = self.tela.mostra_opcoes(opcoes)
                 else:
                     self.tela.mensagem_erro('Tente novamente, produto não encontrado.')
-                    opcoes = {1: "Tentar novamente", 0: "Voltar" if len(venda.itens) > 0 else "Cancelar cadastro da venda" }
+                    opcoes = {1: "Tentar novamente", 0: "Concluir" if len(venda.itens) > 0 else "Cancelar cadastro da venda" }
                     opcao = self.tela.mostra_opcoes(opcoes)
                     
             else:
@@ -152,25 +154,18 @@ class ControladorVendas(Controlador):
         
         return venda if venda.itens else None
         
-            
-    def verifica_se_ja_existe_venda_com_codigo(self, codigo) -> Venda:
-        for venda in self.__vendas:
-            if codigo == venda.codigo:
-                return venda                
-        else:
-            return None
-        
     def inicializa_venda(self, dados_venda) -> Venda:
         if dados_venda['encomenda'] == 's':
             encomenda = True
         else:
             encomenda = False
             
-        return Venda(
-            dados_venda['codigo'],
+        venda =  Venda(
+            self.__codigo_atual,
             dados_venda['atendente'],
             encomenda
         )
+        return venda
         
     def lista_vendas(self):
         self.tela.cabecalho('Lista Vendas')
@@ -184,7 +179,7 @@ class ControladorVendas(Controlador):
             
                 
     def lista_venda(self, venda): 
-        self.tela.cabecalho("Encomenda:" if venda.encomenda else "Venda:")
+        self.tela.cabecalho("Encomenda" if venda.encomenda else "Venda")
         
         if venda.encomenda == True:
             self.tela.mostra_dados_encomenda({
@@ -212,6 +207,7 @@ class ControladorVendas(Controlador):
         })
         
     def mostra_itens(self, itens):
+        self.tela.cabecalho("Itens")
         for item in itens:
             self.tela.mostra_item({
                 'produto': item.produto.nome,
@@ -220,14 +216,15 @@ class ControladorVendas(Controlador):
             })
             
     def lista_encomendas(self):
-       
-        if len(self.__vendas) > 0:
-            for venda in self.__vendas:
-                if venda.encomenda == True and venda.entregue == False:
-                    self.lista_venda(venda)
-                
-        else:
-            self.tela.mensagem_erro('Nenhuma venda encontrada.')
+        self.tela.cabecalho('Lista Encomendas')
+        encomenda = False
+        
+        for venda in self.__vendas:
+            if venda.encomenda == True and venda.entregue == False:
+                self.lista_venda(venda) 
+                encomenda = True  
+        if encomenda is False:
+            self.tela.mensagem_erro('Nenhuma encomenda encontrada.')
             
                 
             
@@ -236,12 +233,15 @@ class ControladorVendas(Controlador):
         opcoes = {1: "Listar novamente", 0: "Voltar"}
         while True:
             cpf = self.tela.solicita_cpf_cliente()
-            
+            self.tela.quebra_linha()
+            encontrada = False
             if len(self.__vendas) > 0:
                 for venda in self.__vendas:
                     if venda.cliente and venda.cliente.cpf == cpf:
                         self.lista_venda(venda)
-                    
+                        encontrada = True
+                if encontrada is False:
+                    self.tela.mensagem("Nenhuma venda deste cliente encontrada")
             else:
                 self.tela.mensagem_erro('Nenhuma venda encontrada.')
                 break
@@ -254,12 +254,16 @@ class ControladorVendas(Controlador):
     def lista_vendas_por_funcionario(self):
         opcoes = {1: "Listar novamente", 0: "Voltar"}
         while True:
-            
+            encontrada = False
             matricula = self.tela.solicita_matricula_funcionario()
+            self.tela.quebra_linha()
             if len(self.__vendas) > 0:
                 for venda in self.__vendas:
                     if venda.atendente and venda.atendente.matricula == matricula:
                         self.lista_venda(venda)
+                        encontrada = True
+                if encontrada is False:
+                    self.tela.mensagem("Nenhuma venda deste funcionário encontrada")
             else:
                 self.tela.mensagem_erro('Nenhuma venda encontrada.')
                 break
@@ -272,10 +276,15 @@ class ControladorVendas(Controlador):
     def conclui_encomenda(self):
         codigo_venda = self.tela.solicita_codigo_venda('Concluir encomenda')
         venda = self.verifica_se_ja_existe_venda_com_codigo(codigo_venda)
+        self.tela.quebra_linha()
         
         if isinstance(venda, Venda) and venda.encomenda == True:
             if venda.entregue == False:
-                venda.entregue = True
+                try:
+                    self.__controlador_central.controlador_estoque.processa_venda(venda)
+                    venda.entregue = True
+                except ValueError:
+                    self.tela.mensagem_erro("Entrega cancelada")
                 self.tela.mensagem("Encomenda concluída com sucesso.")
             else:
                 self.tela.mensagem("Encomenda já entregue.")
@@ -285,6 +294,7 @@ class ControladorVendas(Controlador):
     def cancela_encomenda(self):
         codigo_venda = self.tela.solicita_codigo_venda('Cancelar encomenda')
         venda = self.verifica_se_ja_existe_venda_com_codigo(codigo_venda)
+        self.tela.quebra_linha()
         
         if isinstance(venda, Venda) and venda.encomenda == True:
             if venda.entregue == False:
@@ -299,11 +309,17 @@ class ControladorVendas(Controlador):
                  
     def seleciona_venda_por_codigo(self):
         
-        codigo = self.tela.solicita_codigo_venda('Pesquisa Venda')
-        if isinstance(codigo, int):        
-            venda = self.verifica_se_ja_existe_venda_com_codigo(codigo)
-            
-            if isinstance(venda, Venda):
-                self.lista_venda(venda)
-            else:
-                self.tela.mensagem_erro('Não existe venda ou código incorreto.')
+        codigo = self.tela.solicita_codigo_venda('Pesquisa Venda')       
+        venda = self.verifica_se_ja_existe_venda_com_codigo(codigo)
+        
+        if isinstance(venda, Venda):
+            self.lista_venda(venda)
+        else:
+            self.tela.mensagem_erro('Não existe venda com este código.')
+
+    def verifica_se_ja_existe_venda_com_codigo(self, codigo) -> Venda:
+        for venda in self.__vendas:
+            if codigo == venda.codigo:
+                return venda                
+        else:
+            return None

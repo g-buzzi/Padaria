@@ -9,20 +9,20 @@ class TelaVenda(Tela):
             self.cabecalho(mensagem)
 
         return {
-            'codigo': self.le_num_inteiro('Código: '),
             'atendente': self.le_num_inteiro('Matrícula do atendente: '),
             'encomenda': self.le_string('Encomenda (s/n): ')
         }
       
     def mostra_dados_encomenda(self, dados_encomenda):
         print(
-            '\nData de entrega:', dados_encomenda['data_entrega'],
+            'Data de entrega:', dados_encomenda['data_entrega'],
             '\nEntregue:', dados_encomenda['entregue']
         )
+        print()
         
     def mostra_cliente(self, cliente):
         print(
-            '\nCliente:', cliente,
+            'Cliente:', cliente,
             '\n'
         )
           
@@ -30,20 +30,22 @@ class TelaVenda(Tela):
         
         print(
             
-            '\nCódigo:', dados_venda['codigo'],
+            'Código:', dados_venda['codigo'],
             '\nAtendente:', dados_venda['atendente'],
             '\nEncomenda:', dados_venda['encomenda'],
         )
+        print()
         
     def mostra_item(self, dados_item):
+        print('Produto:', dados_item['produto'], '\nQuantidade:', dados_item['quantidade'], '\nValor unitário R$:', dados_item['valor_unitario'])
         print()
-        print('Produto:', dados_item['produto'], '\tQuantidade:', dados_item['quantidade'], '\tValor unitário R$:', dados_item['valor_unitario'])
+        print("---------------------")
+        print()
             
     def mostra_valores(self, dados_valores):
         print(
-            '\n\nDesconto na venda (%):', dados_valores['desconto'],
+            'Desconto na venda (%):', dados_valores['desconto'],
             '\nPreço final R$:', dados_valores['preco_final'],
-            '\n'
             '\n'
         )
         
@@ -68,9 +70,10 @@ class TelaVenda(Tela):
         }
         
     def solicita_desconto(self):
-        print('\n------------------------------')
+        print('------------------------------')
         desconto = self.le_num_inteiro('\nDesconto na venda (%): ')
         print('\n------------------------------')
+        print()
         return desconto
     
     def solicita_cpf_cliente(self):

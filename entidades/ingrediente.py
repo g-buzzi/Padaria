@@ -3,18 +3,9 @@ from entidades.estocado import Estocado
 
 class Ingrediente(Estocado):
     def __init__(self, codigo: int, nome: str, unidade_medida: str, preco_unitario: float):
-        super().__init__(nome)
-        self.__codigo = codigo
+        super().__init__(codigo, nome)
         self.__unidade_medida = unidade_medida
         self.__preco_unitario = preco_unitario
-
-    @property
-    def codigo(self) -> int:
-        return self.__codigo
-
-    @codigo.setter
-    def codigo(self, codigo: int):
-        self.__codigo = codigo
 
     @property
     def unidade_medida(self) -> str:

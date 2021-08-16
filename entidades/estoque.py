@@ -15,14 +15,6 @@ class Estoque:
     def movimentacoes(self):
         return self.__movimentacoes
 
-    def venda(self, produto: Produto, quantidade: int):
-        if quantidade > produto.quantidade_estoque:
-            raise ValueError
-        valor_total = produto.preco_venda * quantidade
-        self.__movimentacoes.append(Movimentacao("Venda", produto, quantidade, valor_total))
-        produto.quantidade_estoque -= quantidade
-        self.__balanco += valor_total
-
     def compra(self, ingrediente: Ingrediente, quantidade: int):
         valor_total = ingrediente.preco_unitario * quantidade
         self.__movimentacoes.append(Movimentacao("Compra", ingrediente, quantidade, valor_total))
@@ -34,6 +26,14 @@ class Estoque:
         for ingrediente, quantidade_ingrediente in produto.receita.ingredientes_receita.items():
             ingrediente.quantidade_estoque -= (quantidade * quantidade_ingrediente)
         produto.quantidade_estoque += quantidade * produto.receita.rendimento 
+
+    def venda(self, produto: Produto, quantidade: int):
+        if quantidade > produto.quantidade_estoque:
+            raise ValueError
+        valor_total = produto.preco_venda * quantidade
+        self.__movimentacoes.append(Movimentacao("Venda", produto, quantidade, valor_total))
+        produto.quantidade_estoque -= quantidade
+        self.__balanco += valor_total
 
     def baixa(self, estocado, quantidade: int):
         self.__movimentacoes.append(Movimentacao("Baixa", estocado, quantidade, 0))

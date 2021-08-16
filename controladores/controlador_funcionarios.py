@@ -30,6 +30,7 @@ class ControladorFuncionarios(Controlador):
 
         while True:
             dados_funcionario = self.tela.recebe_dados_funcionarios('Cadastra')
+            self.tela.quebra_linha()
             resposta = self.verifica_se_ja_existe_funcionario_com_matricula(dados_funcionario['matricula'])
             if resposta:
                 self.tela.mensagem_erro('Já existe funcionário com essa matrícula.')
@@ -101,6 +102,9 @@ class ControladorFuncionarios(Controlador):
                     'email': funcionario.email,
                     'salario': funcionario.salario
                 })
+                break
+        else:
+            self.tela.mensagem("Nenhum funcionário com essa matrícula encontrada")
 
     def altera_funcionario(self):
         opcoes = {1: "Continuar alterando", 0: "Voltar"}

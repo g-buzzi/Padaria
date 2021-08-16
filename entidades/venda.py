@@ -1,3 +1,4 @@
+from entidades.produto import Produto
 from entidades.funcionario import Funcionario
 from entidades.cliente import Cliente
 from entidades.item import Item
@@ -32,27 +33,16 @@ class Venda():
     @property
     def itens(self) -> list:
         return self.__itens
-    
-    @itens.setter 
-    def itens(self, item):
-        self.itens.append(item)
         
     @property
     def preco_final(self) -> float:
-        self.calcula_preco_final()
-        
-        return self.__preco_final
-    
-    def calcula_preco_final(self):
         total = 0.0
         for item in self.__itens:
             total = total + (item.quantidade * item.produto.preco_venda)
             
         if self.__desconto > 0:
             total = total - (total * self.__desconto/100)
-            
-        self.__preco_final = total
-            
+        return total    
         
     @property
     def atendente(self) -> Funcionario:
@@ -100,8 +90,10 @@ class Venda():
     
     @entregue.setter 
     def entregue(self, entregue):
-        
         self.__entregue = entregue
+
+    def inclui_item(self, produto: Produto, quantidade: int):
+        self.__itens.append(Item(produto, quantidade))
     
     
     
