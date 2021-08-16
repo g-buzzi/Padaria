@@ -15,7 +15,6 @@ class Venda():
         self.__atendente = atendente
         self.__encomenda = encomenda
         self.__itens: list[Item] = []
-        self.__preco_final = None,
         self.__desconto: float = None
         self.__cliente: Cliente = None
         self.__data_entrega = None

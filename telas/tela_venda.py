@@ -20,7 +20,7 @@ class TelaVenda(Tela):
         )
         print()
         
-    def mostra_cliente(self, cliente):
+    def mostra_cliente(self, cliente: str):
         print(
             'Cliente:', cliente,
             '\n'
@@ -71,7 +71,7 @@ class TelaVenda(Tela):
         
     def solicita_desconto(self):
         print('------------------------------')
-        desconto = self.le_num_inteiro('\nDesconto na venda (%): ')
+        desconto = self.le_num_fracionario('\nDesconto na venda (%): ')
         print('\n------------------------------')
         print()
         return desconto

@@ -20,8 +20,11 @@ class ControladorCentral(Controlador):
         self.__controlador_funcionarios = ControladorFuncionarios(self)
         self.__controlador_clientes = ControladorClientes(self)
         self.__controlador_vendas = ControladorVendas(self)
-        
-        self.__controladores = {
+
+
+    def abre_tela_inicial(self):
+        opcoes = {1: "Ingredientes", 2: "Receitas", 3: "Produtos", 4: "Estoque", 5: "Funcionários", 6: "Clientes", 7: "Vendas", 0: "Sair"}
+        switcher = {
             0: False, 1: self.controlador_ingredientes, 
             2: self.controlador_receitas, 
             3: self.controlador_produtos, 
@@ -30,12 +33,9 @@ class ControladorCentral(Controlador):
             6: self.controlador_clientes,
             7: self.controlador_vendas
         }
-
-    def abre_tela_inicial(self):
-        opcoes = {1: "Ingredientes", 2: "Receitas", 3: "Produtos", 4: "Estoque", 5: "Funcionários", 6: "Clientes", 7: "Vendas", 0: "Sair"}
         while True:
             opcao = self.tela.mostra_opcoes(opcoes, "-------- Tela Inicial --------")
-            controlador = self.__controladores[opcao]
+            controlador = switcher[opcao]
 
             if controlador is False:
                 break
