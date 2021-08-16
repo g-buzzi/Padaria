@@ -15,7 +15,7 @@ class ControladorIngredientes(Controlador):
         return self.__ingredientes
 
     def abre_tela_inicial(self):
-        switcher = {0: False, 1: self.registra_ingrediente, 2: self.altera_ingrediente, 3: self.remove_ingrediente, 4: self.lista_ingredientes, 5: self.pesquisa_ingrediente_por_nome}
+        switcher = {0: False, 1: self.cadastra_ingrediente, 2: self.altera_ingrediente, 3: self.remove_ingrediente, 4: self.lista_ingredientes, 5: self.pesquisa_ingrediente_por_nome}
         opcoes = {1: "Cadastrar", 2: "Alterar", 3: "Remover", 4: "Listar", 5:"Pesquisar", 0: "Voltar"}
         while True:
             opcao = self.tela.mostra_opcoes(opcoes, "--------- Ingredientes ---------")
@@ -25,10 +25,10 @@ class ControladorIngredientes(Controlador):
             else:
                 break
 
-    def registra_ingrediente(self):
+    def cadastra_ingrediente(self):
         opcoes = {1: "Continuar cadastrando", 0: "Voltar"}
         while True:
-            dados = self.tela.registra_ingrediente()
+            dados = self.tela.cadastra_ingrediente()
             if dados["codigo"] not in self.__ingredientes.keys():
                 for ingrediente in self.__ingredientes.values():
                     if dados["nome"].lower() == ingrediente.nome.lower():
@@ -54,14 +54,14 @@ class ControladorIngredientes(Controlador):
                 ingrediente = self.__ingredientes[codigo]
             except KeyError:
                 self.tela.mensagem_erro("Nenhum ingrediente com este código existe")
-                continue
-            while True:
-                self.mostra_ingrediente(ingrediente)
-                opcao = self.tela.mostra_opcoes(opcoes_alteracao, "---- Opções de Alteração ----")
-                funcao = funcoes_alteracao[opcao]
-                if funcao is False:
-                    break
-                funcao(ingrediente)
+            else:
+                while True:
+                    self.mostra_ingrediente(ingrediente)
+                    opcao = self.tela.mostra_opcoes(opcoes_alteracao, "---- Opções de Alteração ----")
+                    funcao = funcoes_alteracao[opcao]
+                    if funcao is False:
+                        break
+                    funcao(ingrediente)
             opcao = self.tela.mostra_opcoes(opcoes)
             if opcao == 0:
                 break
@@ -70,11 +70,6 @@ class ControladorIngredientes(Controlador):
     def alteracao_completa(self, ingrediente: Ingrediente):
         dados = self.dados_ingrediente(ingrediente)
         dados = self.tela.alteracao_completa(dados)
-        if dados["nome"] != ingrediente.nome:
-            for ing in self.__ingredientes.values():
-                if dados["nome"].lower() == ing.nome.lower() and ing != ingrediente:
-                    self.tela.mensagem_erro("Nome duplicado, alterações não serão realizadas")
-                    return
         if ingrediente.codigo != dados["codigo"]:
             if dados["codigo"] not in self.__ingredientes.keys():
                 self.__ingredientes.pop(ingrediente.codigo)
@@ -83,6 +78,11 @@ class ControladorIngredientes(Controlador):
             else:
                 self.tela.mensagem_erro("Código em uso, as alteraçoes não serão realizadas")
                 return
+        if dados["nome"] != ingrediente.nome:
+            for ing in self.__ingredientes.values():
+                if dados["nome"].lower() == ing.nome.lower() and ing != ingrediente:
+                    self.tela.mensagem_erro("Nome duplicado, alterações não serão realizadas")
+                    return
         ingrediente.nome = dados["nome"]
         ingrediente.unidade_medida = dados["unidade_medida"]
         ingrediente.preco_unitario = dados["preco_unitario"] 
@@ -161,7 +161,6 @@ class ControladorIngredientes(Controlador):
             opcao = self.tela.mostra_opcoes(opcoes)
             if opcao == 0:
                 break
-
 
     def dados_ingrediente(self, ingrediente: Ingrediente) -> dict:
         dados = {"codigo": ingrediente.codigo, "nome": ingrediente.nome, "unidade_medida": ingrediente.unidade_medida, "preco_unitario": ingrediente.preco_unitario, "quantidade_estoque": ingrediente.quantidade_estoque}

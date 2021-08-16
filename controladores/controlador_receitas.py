@@ -16,7 +16,7 @@ class ControladorReceitas(Controlador):
         return self.__receitas
 
     def abre_tela_inicial(self):
-        switcher = {0: False, 1: self.registra_receita, 2: self.altera_receita, 3: self.remove_receita, 4: self.lista_receitas, 5: self.pesquisa_por_ingrediente}
+        switcher = {0: False, 1: self.cadastra_receita, 2: self.altera_receita, 3: self.remove_receita, 4: self.lista_receitas, 5: self.pesquisa_por_ingrediente}
         opcoes = {1: "Cadastrar", 2: "Alterar", 3: "Remover", 4: "Listar", 5: "Pesquisar", 0: "Voltar"}
         while True:
             opcao = self.tela.mostra_opcoes(opcoes, "--------- Receitas ---------")
@@ -26,12 +26,12 @@ class ControladorReceitas(Controlador):
             else:
                 break
 
-    def registra_receita(self):
+    def cadastra_receita(self):
         opcoes = {1: "Continuar cadastrando", 0: "Voltar"}
         opcoes_ingredientes = {1: "Adicionar Ingrediente à receita", 2: "Remover Ingrediente da receita", 0: "Finalizar"}
         switcher = {1: self.inclui_ingrediente_receita, 2: self.remove_ingrediente_receita, 0: False}
         while True:
-            dados = self.tela.registra_receita()
+            dados = self.tela.cadastra_receita()
             if dados["codigo"] not in self.__receitas.keys():
                 receita = Receita(dados["codigo"], dados["modo_preparo"], dados["tempo_preparo"], dados["rendimento"])
                 self.__receitas[dados["codigo"]] = receita
@@ -89,14 +89,14 @@ class ControladorReceitas(Controlador):
                 receita = self.__receitas[codigo]
             except KeyError:
                 self.tela.mensagem_erro("Nenhuma receita com este código existe")
-                continue
-            while True:
-                self.mostra_receita(receita)
-                opcao = self.tela.mostra_opcoes(opcoes_alteracao, "---- Opções de Alteração ----")
-                funcao = funcoes_alteracao[opcao]
-                if funcao is False:
-                    break
-                funcao(receita)
+            else:
+                while True:
+                    self.mostra_receita(receita)
+                    opcao = self.tela.mostra_opcoes(opcoes_alteracao, "---- Opções de Alteração ----")
+                    funcao = funcoes_alteracao[opcao]
+                    if funcao is False:
+                        break
+                    funcao(receita)
             opcao = self.tela.mostra_opcoes(opcoes)
             if opcao == 0:
                 break
@@ -176,13 +176,13 @@ class ControladorReceitas(Controlador):
             codigo_receita = self.tela.remove_receita()
             try:
                 receita = self.__receitas[codigo_receita]
+                self.mostra_receita(receita)
                 if receita.produto_associado:
                     self.tela.mensagem("Esta receita está associada a um produto")
                 opcao = self.tela.mostra_opcoes(opcoes_remocao, "Confirmar Exclusão")
                 if opcao == 1:
                     self.__receitas.pop(codigo_receita)
-                    if receita.produto_associado:
-                        receita.produto_associado.remove_receita()
+                    receita.remove_produto_associado()
                     self.tela.mensagem("Receita excluida com sucesso")
                 else:
                     self.tela.mensagem("Exclusão Cancelada")

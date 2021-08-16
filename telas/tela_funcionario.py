@@ -35,5 +35,7 @@ class TelaFuncionario(Tela):
 
     def solicita_matricula_funcionario(self, mensagem: str):
         self.cabecalho(mensagem)
-        return self.le_num_inteiro('Matrícula: ')
+        matricula = self.le_num_inteiro('Matrícula: ')
+        print()
+        return matricula
 

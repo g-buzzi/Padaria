@@ -1,8 +1,11 @@
+from typing import DefaultDict
+from entidades.venda import Venda
 from entidades.movimentacao import Movimentacao
 from controladores.controlador_abstrato import Controlador
 from telas.tela_estoque import TelaEstoque
 from datetime import datetime
 from entidades.estoque import Estoque
+from collections import defaultdict
 
 class ControladorEstoque(Controlador):
     def __init__(self, controlador_central):
@@ -33,11 +36,24 @@ class ControladorEstoque(Controlador):
             else:
                 break
 
-    def processa_venda(self, venda):
-        try:
-            self.__estoque.venda(venda.produto, venda.quantidade)
-        except ValueError:
-            self.tela.mensagem_erro("Quantidade insuficente de {} no estoque".format(venda.produto.nome))
+    def processa_venda(self, venda: Venda):
+        venda_organizada = self.possibilidade_venda(venda)
+        for produto, quantidade in venda_organizada.items():
+            self.__estoque.venda(produto, quantidade)
+                
+
+    def possibilidade_venda(self, venda: Venda):
+        produtos = defaultdict(lambda: 0)
+        for item in venda.itens:
+            produtos[item.produto] += item.quantidade
+        for produto, quantidade in produtos.items():
+            if produto.quantidade_estoque < quantidade:
+                self.tela.mensagem_erro("Quantidade insuficente de {} no estoque".format(produto.nome))
+                raise ValueError
+        return produtos
+        
+        
+
 
     def lista_estoque(self):
         self.tela.cabecalho("Lista do Estoque")
@@ -50,12 +66,14 @@ class ControladorEstoque(Controlador):
         self.tela.cabecalho_estoque("Ingrediente")
         for ingrediente in self.ingredientes_estoque.values():
             self.mostra_estoque(ingrediente)
+        self.tela.quebra_linha()
 
     def lista_produtos(self):
         self.tela.cabecalho("Produtos")
         self.tela.cabecalho_estoque("Produto")
         for produto in self.produtos_estoque.values():
             self.mostra_estoque(produto)
+        self.tela.quebra_linha()
 
     def lista_movimentacoes(self):
         self.tela.cabecalho("Movimentações")
@@ -67,7 +85,7 @@ class ControladorEstoque(Controlador):
         opcoes = {1: "Continuar compras", 0: "Voltar"}
         while True:
             self.tela.cabecalho("Compra")
-            codigo_ingrediente = self.tela.le_codigo_ingrediente()
+            codigo_ingrediente = self.tela.le_codigo("ingrediente")
             try:
                 ingrediente = self.ingredientes_estoque[codigo_ingrediente]
             except KeyError:
@@ -88,7 +106,7 @@ class ControladorEstoque(Controlador):
         opcoes = {1: "Continuar produção", 0: "Voltar"}
         while True:
             self.tela.cabecalho("Produção")
-            codigo_produto = self.tela.le_codigo_produto()
+            codigo_produto = self.tela.le_codigo("produto")
             try:
                 produto = self.produtos_estoque[codigo_produto]
             except KeyError:
@@ -127,7 +145,7 @@ class ControladorEstoque(Controlador):
             
     def realiza_baixa_ingrediente(self):
         self.tela.cabecalho("Baixa de Ingrediente")
-        codigo_ingrediente = self.tela.le_codigo_ingrediente()
+        codigo_ingrediente = self.tela.le_codigo("ingrediente")
         try:
             ingrediente = self.ingredientes_estoque[codigo_ingrediente]
         except KeyError:
@@ -145,7 +163,7 @@ class ControladorEstoque(Controlador):
 
     def realiza_baixa_produto(self):
         self.tela.cabecalho("Baixa de Produto")
-        codigo_produto = self.tela.le_codigo_produto()
+        codigo_produto = self.tela.le_codigo("produto")
         try:
             produto = self.produtos_estoque[codigo_produto]
         except KeyError:

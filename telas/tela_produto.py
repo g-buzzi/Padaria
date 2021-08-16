@@ -4,7 +4,7 @@ class TelaProduto(Tela):
     def __init__(self, controlador):
         super().__init__(controlador)
 
-    def registra_produto(self):
+    def cadastra_produto(self):
         self.cabecalho("Cadastrar Produto")
         dados = {}
         dados["codigo"] = self.le_num_inteiro("Código do produto: ")
@@ -19,6 +19,7 @@ class TelaProduto(Tela):
     def altera_produto(self) -> int:
         self.cabecalho("Alterar")
         codigo = self.le_num_inteiro("Código do produto a ser alterado: ")
+        print()
         return codigo
 
     def alteracao_completa(self, dados_antigos: dict) -> dict:
@@ -67,7 +68,6 @@ class TelaProduto(Tela):
         codigo = self.le_num_inteiro("Código do produto a ser excluido: ")
         print()
         return codigo
-
 
     def mostra_produto(self, dados: dict):
         print("---- {} ----".format(dados["nome"]))

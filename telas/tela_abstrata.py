@@ -23,7 +23,7 @@ class Tela(ABC):
         while True:
             try:
                 inteiro = input(mensagem)
-                inteiro = int(inteiro)  #Talvez impedir valores menores que 0
+                inteiro = int(inteiro) 
                 if valores_validos and inteiro not in valores_validos:
                     raise ValueError
                 if inteiro < 0:
@@ -37,7 +37,7 @@ class Tela(ABC):
         while True:
             try:
                 fracionario = round(float(input(mensagem)), digitos)
-                if fracionario > 0:
+                if fracionario >= 0:
                     return fracionario
                 self.mensagem_erro("Valor incorreto. Digite um número maior que 0.")
             except ValueError:
@@ -59,6 +59,9 @@ class Tela(ABC):
 
     def mensagem(self, mensagem: str):
         print("- {} -".format(mensagem))
+        print()
+
+    def quebra_linha(self):
         print()
 
 

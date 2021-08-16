@@ -6,7 +6,7 @@ class ControladorClientes(Controlador):
 
     def __init__(self, controlador_central):
         super().__init__(TelaCliente(self))
-        self.__clientes: List[Cliente] = []
+        self.__clientes: list[Cliente] = []
         self.__controlador_central = controlador_central
         
     def abre_tela_inicial(self):
@@ -32,6 +32,7 @@ class ControladorClientes(Controlador):
 
         while True:
             dados_cliente = self.tela.recebe_dados_cliente('Cadastra Cliente')
+            self.tela.quebra_linha()
             resposta = self.verifica_se_ja_existe_cliente_com_cpf(dados_cliente['cpf'])
             if resposta:
                 self.tela.mensagem_erro('Já existe cliente com esse cpf.')
@@ -77,6 +78,7 @@ class ControladorClientes(Controlador):
         opcoes = {1: "Continuar removendo", 0: "Voltar"}
         while True:
             cpf = self.tela.solicita_cpf_cliente('Remove Cliente')
+            self.tela.quebra_linha()
 
             cliente = self.verifica_se_ja_existe_cliente_com_cpf(cpf)
             if isinstance(cliente, Cliente):
@@ -103,6 +105,9 @@ class ControladorClientes(Controlador):
                     'email': cliente.email,
                     'endereco': cliente.endereco
                 })
+                break
+        else:
+            self.tela.mensagem_erro("Nenhum cliente com este cpf cadastrado")
 
     def altera_cliente(self):
         opcoes = {1: "Continuar alterando", 0: "Voltar"}

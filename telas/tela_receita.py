@@ -4,7 +4,7 @@ class TelaReceita(Tela):
     def __init__(self, controlador):
         super().__init__(controlador)
 
-    def registra_receita(self) -> dict:
+    def cadastra_receita(self) -> dict:
         dados = {}
         self.cabecalho("Cadastro de Receita")
         dados["codigo"] = self.le_num_inteiro("Código: ")
@@ -21,7 +21,7 @@ class TelaReceita(Tela):
         return codigo
 
     def le_quantidade_ingrediente(self):
-        quantidade = self.le_num_fracionario("Quantidade: ")
+        quantidade = self.le_num_inteiro("Quantidade: ")
         print()
         return quantidade
 
@@ -109,5 +109,5 @@ class TelaReceita(Tela):
         print()
         for dados_ingrediente in dados["dados_ingredientes"]:
             print("Ingrediente: {}".format(dados_ingrediente["nome"]))
-            print("Quantidade: {:.2f}{}".format(dados_ingrediente["quantidade"], dados_ingrediente["unidade_medida"]))
+            print("Quantidade: {}{}".format(dados_ingrediente["quantidade"], dados_ingrediente["unidade_medida"]))
             print()
