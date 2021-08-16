@@ -36,16 +36,16 @@ class TelaVenda(Tela):
             '\n'
         )
         
-    def mostra_item(self, itens):
-        print('Itens:')
-        for item in itens:
-            print('Produto:', item.produto.nome, '\tQuantidade:', item.quantidade, '\tValor unitário R$:', item.produto.preco_venda)
+    def mostra_item(self, dados_item):
+        print('Produto:', dados_item['produto'], '\tQuantidade:', dados_item['quantidade'], '\tValor unitário R$:', dados_item['valor_unitario'])
             
     def mostra_valores(self, dados_valores):
         print(
             '\nDesconto (%):', dados_valores['desconto'],
             '\nPreço final R$:', dados_valores['preco_final'],
-            '\n--------------Fim da Venda-------------------'
+            '\n'
+            '\n----------------------------------------'
+            '\n'
         )
         
     def solicita_codigo_venda(self, mensagem: str):

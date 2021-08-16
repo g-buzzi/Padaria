@@ -137,26 +137,25 @@ class ControladorVendas(Controlador):
     def lista_vendas(self):
         self.tela.cabecalho('Lista Vendas')
 
-        opcoes = {1: "Listar novamente", 0: "Voltar"}
-        while True:
-            if len(self.__vendas) > 0:
-                for venda in self.__vendas:
-                    self.lista_venda(venda)
+        if len(self.__vendas) > 0:
+            for venda in self.__vendas:
+                self.lista_venda(venda)
+        
+        else:
+            self.tela.mensagem_erro('Nenhuma venda encontrada.')
             
-            else:
-                self.tela.mensagem_erro('Nenhuma venda encontrada.')
-                break
                 
-            opcao = self.tela.mostra_opcoes(opcoes)
-            if opcao == 0:
-                break
+          
                 
     def lista_venda(self, venda): 
+        self.tela.cabecalho("Encomenda:" if venda.encomenda else "Venda:")
+        
         if venda.encomenda == True:
             self.tela.mostra_dados_encomenda({
                 'data_entrega': venda.data_entrega,
                 'entregue': 'Sim' if venda.entregue else 'Não'
             })
+        
                 
         if venda.cliente or venda.encomenda == True:
             self.tela.mostra_cliente(
@@ -175,22 +174,28 @@ class ControladorVendas(Controlador):
             'preco_final': venda.preco_final,
             'desconto': venda.desconto,
         })
+        
+    def mostra_itens(self, itens: list[Item]):
+        self.tela.cabecalho('Itens: ')
+        for item in itens:
+            self.tela.mostra_item({
+                'produto': item.produto.nome,
+                'quantidade': item.quantidade,
+                'valor_unitario': item.produto.preco_venda
+            })
             
     def lista_encomendas(self):
-        opcoes = {1: "Listar novamente", 0: "Voltar"}
-        while True:
-            if len(self.__vendas) > 0:
-                for venda in self.__vendas:
-                    if venda.encomenda == True and venda.entregue == False:
-                        self.lista_venda(venda)
-                   
-            else:
-                self.tela.mensagem_erro('Nenhuma venda encontrada.')
-                break
+       
+        if len(self.__vendas) > 0:
+            for venda in self.__vendas:
+                if venda.encomenda == True and venda.entregue == False:
+                    self.lista_venda(venda)
                 
-            opcao = self.tela.mostra_opcoes(opcoes)
-            if opcao == 0:
-                break
+        else:
+            self.tela.mensagem_erro('Nenhuma venda encontrada.')
+            
+                
+            
                         
     def lista_vendas_por_cliente(self):
         opcoes = {1: "Listar novamente", 0: "Voltar"}
@@ -233,21 +238,27 @@ class ControladorVendas(Controlador):
         codigo_venda = self.tela.solicita_codigo_venda('Concluir encomenda')
         venda = self.verifica_se_ja_existe_venda_com_codigo(codigo_venda)
         
-        if isinstance(venda, Venda) and venda.encomenda == True and venda.entregue == False:
-            venda.entregue = True
-            self.tela.mensagem("Encomenda concluída com sucesso")
+        if isinstance(venda, Venda) and venda.encomenda == True:
+            if venda.entregue == False:
+                venda.entregue = True
+                self.tela.mensagem("Encomenda concluída com sucesso.")
+            else:
+                self.tela.mensagem("Encomenda já entregue.")
         else:
-            self.tela.mensagem_erro('Não existe encomenda ou código incorreto.')
+            self.tela.mensagem_erro('Não existe encomenda com esse código.')
             
     def cancela_encomenda(self):
         codigo_venda = self.tela.solicita_codigo_venda('Cancelar encomenda')
         venda = self.verifica_se_ja_existe_venda_com_codigo(codigo_venda)
         
-        if isinstance(venda, Venda) and venda.encomenda == True and venda.entregue == False:
-            self.__vendas.remove(venda)
-            self.tela.mensagem("Encomenda cancelada com sucesso")
+        if isinstance(venda, Venda) and venda.encomenda == True:
+            if venda.entregue == False:
+                self.__vendas.remove(venda)
+                self.tela.mensagem("Encomenda cancelada com sucesso.")
+            else:
+                self.tela.mensagem("Encomenda não pode ser cancelada pois já foi entregue.")
         else:
-            self.tela.mensagem_erro('Não existe encomenda ou código incorreto.')
+            self.tela.mensagem_erro('Não existe encomenda com esse código.')
             
         
                  
