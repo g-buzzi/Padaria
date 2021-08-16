@@ -33,18 +33,17 @@ class TelaVenda(Tela):
             '\nCódigo:', dados_venda['codigo'],
             '\nAtendente:', dados_venda['atendente'],
             '\nEncomenda:', dados_venda['encomenda'],
-            '\n'
         )
         
     def mostra_item(self, dados_item):
+        print()
         print('Produto:', dados_item['produto'], '\tQuantidade:', dados_item['quantidade'], '\tValor unitário R$:', dados_item['valor_unitario'])
             
     def mostra_valores(self, dados_valores):
         print(
-            '\nDesconto (%):', dados_valores['desconto'],
+            '\n\nDesconto na venda (%):', dados_valores['desconto'],
             '\nPreço final R$:', dados_valores['preco_final'],
             '\n'
-            '\n----------------------------------------'
             '\n'
         )
         
@@ -69,8 +68,10 @@ class TelaVenda(Tela):
         }
         
     def solicita_desconto(self):
-        
-        return self.le_num_inteiro('Desconto (%): ')
+        print('\n------------------------------')
+        desconto = self.le_num_inteiro('\nDesconto na venda (%): ')
+        print('\n------------------------------')
+        return desconto
     
     def solicita_cpf_cliente(self):
         return self.le_string('Cpf do cliente: ')
