@@ -10,7 +10,6 @@ class TelaCliente(Tela):
             self.cabecalho(mensagem)
 
         return {
-            'codigo': self.le_num_inteiro('Código: '),
             'nome': self.le_string('Nome: '),
             'cpf': self.le_string('CPF: '),
             'telefone': self.le_num_inteiro('Telefone: '),
@@ -21,8 +20,7 @@ class TelaCliente(Tela):
     def mostra_cliente(self, dados_cliente):
     
         print(
-            'Código:', dados_cliente['codigo'],
-            '\nNome:', dados_cliente['nome'],
+            'Nome:', dados_cliente['nome'],
             '\nCPF:', dados_cliente['cpf'],
             '\nTelefone:', dados_cliente['telefone'],
             '\nE-mail:', dados_cliente['email'],
