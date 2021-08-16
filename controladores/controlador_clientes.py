@@ -52,7 +52,6 @@ class ControladorClientes(Controlador):
         
     def salva_dados_cliente(self, dados_cliente):
         self.__clientes.append(Cliente(
-        dados_cliente['codigo'],
         dados_cliente['nome'],
         dados_cliente['cpf'],
         dados_cliente['telefone'],
@@ -65,7 +64,6 @@ class ControladorClientes(Controlador):
 
         for cliente in self.__clientes:
             self.tela.mostra_cliente({
-                'codigo': cliente.codigo,
                 'nome': cliente.nome,
                 'cpf': cliente.cpf,
                 'telefone': cliente.telefone,
@@ -96,7 +94,6 @@ class ControladorClientes(Controlador):
         for cliente in self.__clientes:
             if cliente.cpf == cpf:
                 self.tela.mostra_cliente({
-                    'codigo': cliente.codigo,
                     'nome': cliente.nome,
                     'cpf': cliente.cpf,
                     'telefone': cliente.telefone,
@@ -119,7 +116,6 @@ class ControladorClientes(Controlador):
                 
                 if cliente.cpf == dados_atualizados['cpf'] or resposta is None:
 
-                    cliente.codigo = dados_atualizados['codigo']
                     cliente.nome = dados_atualizados['nome']
                     cliente.cpf = dados_atualizados['cpf']
                     cliente.telefone = dados_atualizados['telefone']
