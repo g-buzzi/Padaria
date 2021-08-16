@@ -6,6 +6,7 @@ from controladores.controlador_produtos import ControladorProdutos
 from controladores.controlador_estoque import ControladorEstoque
 from controladores.controlador_funcionarios import ControladorFuncionarios
 from controladores.controlador_clientes import ControladorClientes
+from controladores.controlador_vendas import ControladorVendas
 
 
 class ControladorCentral(Controlador):
@@ -18,6 +19,7 @@ class ControladorCentral(Controlador):
         self.__controlador_estoque = ControladorEstoque(self)
         self.__controlador_funcionarios = ControladorFuncionarios(self)
         self.__controlador_clientes = ControladorClientes(self)
+        self.__controlador_vendas = ControladorVendas(self)
         
         self.__controladores = {
             0: False, 1: self.controlador_ingredientes, 
@@ -25,11 +27,12 @@ class ControladorCentral(Controlador):
             3: self.controlador_produtos, 
             4: self.controlador_estoque, 
             5: self.controlador_funcionarios, 
-            6: self.controlador_clientes
+            6: self.controlador_clientes,
+            7: self.controlador_vendas
         }
 
     def abre_tela_inicial(self):
-        opcoes = {1: "Ingredientes", 2: "Receitas", 3: "Produtos", 4: "Estoque", 5: "Funcionários", 6: "Clientes", 0: "Sair"}
+        opcoes = {1: "Ingredientes", 2: "Receitas", 3: "Produtos", 4: "Estoque", 5: "Funcionários", 6: "Clientes", 7: "Vendas", 0: "Sair"}
         while True:
             opcao = self.tela.mostra_opcoes(opcoes, "-------- Tela Inicial --------")
             controlador = self.__controladores[opcao]
@@ -62,5 +65,9 @@ class ControladorCentral(Controlador):
     @property
     def controlador_clientes(self):
         return self.__controlador_clientes
+      
+    @property
+    def controlador_vendas(self):
+        return self.__controlador_vendas
 
 
