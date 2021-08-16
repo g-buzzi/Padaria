@@ -63,7 +63,12 @@ class ControladorVendas(Controlador):
             self.tela.quebra_linha()
 
             if dados_venda['encomenda'] == 's':
-                venda_inicializada = self.solicita_dados_encomenda(venda_inicializada)
+                dado = self.solicita_dados_encomenda(venda_inicializada)
+                if isinstance(dado, Venda):
+                    venda_inicializada = dado
+                else:
+                    self.tela.mensagem_erro('Obrigatório informar um cliente.')
+                    break
             else:
                 data = self.solicita_cliente(venda_inicializada)
                 if isinstance(data, Venda):
@@ -127,6 +132,8 @@ class ControladorVendas(Controlador):
             venda.cliente = cliente
             venda.entregue = False
             return venda
+        else:
+            None
                           
             
     def solicita_itens(self, venda):
